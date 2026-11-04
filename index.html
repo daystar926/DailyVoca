@@ -9,7 +9,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700&display=swap">
 <style>
-/* Layout: single centered column, card-based steps on a soft neutral ground, green as the single accent */
 :root{
   --green:#4FE968;--green-deep:#2fb84c;--green-soft:#e6fbec;--green-ring:rgba(79,233,104,.35);
   --bg:#f5f7f5;--surface:#ffffff;--surface-2:#f1f4f1;--fg:#15241a;--muted:#5d6b61;--faint:#8a988d;
@@ -33,12 +32,11 @@
 }
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--font);line-height:1.5;-webkit-font-smoothing:antialiased}
-.wrap{max-width:720px;margin:0 auto;
+.wrap{max-width:760px;margin:0 auto;
   padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px));
   padding-block:28px 64px;}
 h1,h2,h3{margin:0;letter-spacing:-.02em;text-wrap:balance}
 p{margin:0}
-
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:26px}
 .brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:18px;cursor:pointer}
 .logo{width:34px;height:34px;border-radius:10px;background:var(--green);display:grid;place-items:center;flex:none;box-shadow:0 4px 12px var(--green-ring)}
@@ -52,7 +50,6 @@ p{margin:0}
 .theme-btn{border:1px solid var(--line);background:var(--surface);color:var(--muted);width:38px;height:38px;border-radius:11px;cursor:pointer;display:grid;place-items:center;transition:.15s;flex:none}
 .theme-btn:hover{color:var(--fg);border-color:var(--faint)}
 .theme-btn svg{width:18px;height:18px}
-
 .steps{display:flex;align-items:center;gap:6px;margin-bottom:24px;flex-wrap:wrap}
 .step{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--faint)}
 .step .dot{width:22px;height:22px;border-radius:50%;background:var(--surface-2);display:grid;place-items:center;font-size:11px;border:1px solid var(--line)}
@@ -62,14 +59,12 @@ p{margin:0}
 .step.done .dot{background:var(--green-soft);color:var(--green-deep);border-color:transparent}
 .step .bar{width:18px;height:2px;background:var(--line);border-radius:2px}
 .steps.hide{display:none}
-
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:30px}
 .card + .card{margin-top:16px}
 .eyebrow{text-transform:uppercase;letter-spacing:.09em;font-size:11.5px;font-weight:700;color:var(--green-deep);margin-bottom:12px}
 .lede{color:var(--muted);margin-top:10px;font-size:15px;max-width:52ch}
 h1.hero{font-size:34px;font-weight:800;line-height:1.1}
 h2.title{font-size:23px;font-weight:700}
-
 .btn{appearance:none;border:none;border-radius:13px;font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;padding:14px 22px;transition:.15s;display:inline-flex;align-items:center;justify-content:center;gap:9px}
 .btn.primary{background:var(--green);color:#0e2414;box-shadow:0 6px 18px var(--green-ring)}
 .btn.primary:hover{background:var(--green-deep);transform:translateY(-1px)}
@@ -82,8 +77,6 @@ h2.title{font-size:23px;font-weight:700}
 .btn.sm{padding:10px 16px;font-size:13.5px;border-radius:11px}
 .btn svg{width:18px;height:18px}
 .actions{display:flex;gap:11px;margin-top:26px;flex-wrap:wrap}
-
-/* Auth */
 .auth-tabs{display:flex;gap:6px;background:var(--surface-2);padding:5px;border-radius:13px;margin-bottom:22px}
 .auth-tabs button{flex:1;border:none;background:none;font-family:inherit;font-weight:700;font-size:14px;padding:11px;border-radius:9px;cursor:pointer;color:var(--muted);transition:.15s}
 .auth-tabs button.on{background:var(--surface);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.08)}
@@ -95,9 +88,14 @@ h2.title{font-size:23px;font-weight:700}
 .link-row{display:flex;justify-content:center;margin-top:18px}
 .link-btn{background:none;border:none;color:var(--muted);font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 .link-btn:hover{color:var(--fg)}
-
 .field{margin-top:26px}
 .field label{display:block;font-weight:600;font-size:14px;margin-bottom:12px}
+.tier-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tier-btn{border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:13px;padding:14px 10px;cursor:pointer;font-family:inherit;text-align:center;transition:.12s;display:flex;flex-direction:column;gap:3px}
+.tier-btn:hover{border-color:var(--green);background:var(--green-soft)}
+.tier-btn.on{border-color:var(--green);background:var(--green-soft)}
+.tier-btn b{font-size:14px;font-weight:700}
+.tier-btn span{font-size:11px;color:var(--faint)}
 .stepper{display:flex;align-items:center;gap:16px}
 .stepper button{width:46px;height:46px;border-radius:13px;border:1px solid var(--line);background:var(--surface-2);color:var(--fg);font-size:22px;font-weight:700;cursor:pointer;transition:.15s}
 .stepper button:hover{background:var(--green-soft);border-color:var(--green)}
@@ -105,7 +103,6 @@ h2.title{font-size:23px;font-weight:700}
 .count-unit{color:var(--faint);font-size:13px;margin-top:2px;text-align:center}
 input[type=range]{width:100%;margin-top:18px;accent-color:var(--green)}
 .rng-scale{display:flex;justify-content:space-between;color:var(--faint);font-size:12px;margin-top:4px}
-
 .qmeta{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;color:var(--faint);font-size:13px;font-weight:600}
 .pbar{height:7px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin:14px 0 26px}
 .pbar i{display:block;height:100%;background:var(--green);border-radius:99px;transition:width .35s ease}
@@ -121,15 +118,13 @@ input[type=range]{width:100%;margin-top:18px;accent-color:var(--green)}
 .opt.wrong .key{background:var(--danger);color:#fff}
 .opt.disabled{pointer-events:none}
 .opt.dim{opacity:.5}
-
 .study-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .chip{display:inline-flex;align-items:center;gap:7px;background:var(--green-soft);color:var(--green-deep);font-weight:700;font-size:12.5px;padding:6px 12px;border-radius:99px}
 .wordlist{display:grid;gap:10px;margin-top:22px}
 .wordrow{display:flex;align-items:center;gap:16px;padding:15px 18px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
-.wordrow .idx{color:var(--faint);font-size:13px;font-weight:700;width:22px;flex:none;font-variant-numeric:tabular-nums}
+.wordrow .idx{color:var(--faint);font-size:13px;font-weight:700;width:28px;flex:none;font-variant-numeric:tabular-nums}
 .wordrow .en{font-size:18px;font-weight:700;min-width:0}
 .wordrow .ko{margin-left:auto;color:var(--muted);font-size:15px;text-align:right}
-
 .score-ring{display:flex;flex-direction:column;align-items:center;text-align:center;padding:8px 0 4px}
 .ring{position:relative;width:168px;height:168px;margin-bottom:8px}
 .ring svg{transform:rotate(-90deg)}
@@ -160,7 +155,6 @@ input[type=range]{width:100%;margin-top:18px;accent-color:var(--green)}
 .saved-tag{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--green-deep);margin-top:20px}
 .saved-tag.muted{color:var(--muted)}
 .saved-tag svg{width:16px;height:16px}
-
 .wrow{display:flex;align-items:center;gap:13px;padding:13px 16px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px}
 .wrow .en{font-weight:700;font-size:16px}
 .wrow .ko{color:var(--muted);font-size:14px}
@@ -173,14 +167,13 @@ input[type=range]{width:100%;margin-top:18px;accent-color:var(--green)}
 .nick{display:flex;gap:10px;margin-top:14px}
 .nick input{flex:1;min-width:0;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:12px;padding:12px 14px;font-size:15px;font-family:inherit}
 .nick input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px var(--green-ring)}
-
 .hint{display:flex;gap:11px;align-items:flex-start;background:var(--green-soft);border-radius:13px;padding:14px 16px;margin-top:22px;font-size:13.5px;color:var(--fg)}
 .hint.warn{background:var(--danger-soft)}
 .hint svg{width:18px;height:18px;flex:none;margin-top:1px;stroke:var(--green-deep)}
 .hint.warn svg{stroke:var(--danger)}
 .fade{animation:fade .35s ease}
 @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-@media (max-width:480px){.card{padding:22px}h1.hero{font-size:28px}.prompt-word{font-size:32px}.stat-row,.stat-row.three{grid-template-columns:1fr}}
+@media (max-width:480px){.card{padding:22px}h1.hero{font-size:28px}.prompt-word{font-size:32px}.stat-row,.stat-row.three{grid-template-columns:1fr}.tier-grid{grid-template-columns:repeat(2,1fr)}}
 @media (prefers-reduced-motion:reduce){.fade{animation:none}.pbar i,.btn.primary{transition:none}}
 </style>
 </head>
@@ -196,7 +189,6 @@ input[type=range]{width:100%;margin-top:18px;accent-color:var(--green)}
       <button class="theme-btn" id="themeBtn" title="테마 전환" aria-label="테마 전환"></button>
     </div>
   </div>
-
   <div class="steps" id="steps">
     <div class="step" data-s="level"><span class="dot">1</span>레벨 진단</div><span class="bar"></span>
     <div class="step" data-s="setup"><span class="dot">2</span>분량 설정</div><span class="bar"></span>
@@ -204,82 +196,52 @@ input[type=range]{width:100%;margin-top:18px;accent-color:var(--green)}
     <div class="step" data-s="test"><span class="dot">4</span>시험</div><span class="bar"></span>
     <div class="step" data-s="result"><span class="dot">5</span>분석</div>
   </div>
-
   <div id="view"></div>
 </div>
-
 <script>
-// ---------- Word bank : 50 per level ----------
-const BANK = [
-  // ===== level 1 — 기초 (50) =====
-  ["apple","사과",1],["happy","행복한",1],["water","물",1],["friend","친구",1],["house","집",1],
-  ["strong","강한",1],["begin","시작하다",1],["quiet","조용한",1],["bright","밝은",1],["travel","여행하다",1],
-  ["kitchen","부엌",1],["honest","정직한",1],["gather","모으다",1],["weather","날씨",1],["forest","숲",1],
-  ["gentle","온화한",1],["borrow","빌리다",1],["repair","수리하다",1],["weekend","주말",1],["afraid","두려워하는",1],
-  ["answer","대답하다",1],["animal","동물",1],["bridge","다리(교량)",1],["clean","깨끗한",1],["dream","꿈",1],
-  ["early","이른",1],["empty","텅 빈",1],["family","가족",1],["garden","정원",1],["heavy","무거운",1],
-  ["island","섬",1],["jump","뛰다",1],["letter","편지",1],["market","시장",1],["mountain","산",1],
-  ["narrow","좁은",1],["ocean","바다",1],["promise","약속하다",1],["river","강",1],["season","계절",1],
-  ["shoulder","어깨",1],["smile","미소 짓다",1],["station","역",1],["sugar","설탕",1],["teacher","선생님",1],
-  ["thirsty","목마른",1],["ticket","표",1],["umbrella","우산",1],["village","마을",1],["window","창문",1],
-  // ===== level 2 — 중급 (50) =====
-  ["achieve","성취하다",2],["abandon","버리다",2],["confident","자신감 있는",2],["generous","관대한",2],["improve","향상시키다",2],
-  ["obvious","명백한",2],["participate","참여하다",2],["reliable","믿을 수 있는",2],["sufficient","충분한",2],["tremendous","엄청난",2],
-  ["accurate","정확한",2],["anxious","불안한",2],["deliberate","고의적인",2],["essential","필수적인",2],["frequent","빈번한",2],
-  ["grateful","감사하는",2],["influence","영향을 미치다",2],["negotiate","협상하다",2],["persuade","설득하다",2],["vague","모호한",2],
-  ["adapt","적응하다",2],["analyze","분석하다",2],["apparent","겉으로 드러난",2],["assume","가정하다",2],["assess","평가하다",2],
-  ["benefit","이익",2],["capable","유능한",2],["cautious","신중한",2],["complex","복잡한",2],["consider","고려하다",2],
-  ["constant","끊임없는",2],["convince","확신시키다",2],["decline","감소하다",2],["distinct","뚜렷한",2],["emphasize","강조하다",2],
-  ["encounter","마주치다",2],["estimate","추정하다",2],["flexible","유연한",2],["fundamental","근본적인",2],["genuine","진짜의",2],
-  ["hesitate","주저하다",2],["intense","강렬한",2],["maintain","유지하다",2],["modify","수정하다",2],["notion","개념",2],
-  ["obtain","얻다",2],["previous","이전의",2],["reluctant","꺼리는",2],["resource","자원",2],["vivid","생생한",2],
-  // ===== level 3 — 고급 (50) =====
-  ["ambiguous","애매모호한",3],["benevolent","자비로운",3],["conscientious","양심적인",3],["deteriorate","악화되다",3],["eloquent","유창한",3],
-  ["fastidious","까다로운",3],["gregarious","사교적인",3],["inevitable","불가피한",3],["juxtapose","나란히 놓다",3],["meticulous","꼼꼼한",3],
-  ["nonchalant","태연한",3],["obsolete","구식의",3],["perseverance","인내",3],["quintessential","전형적인",3],["resilient","회복력 있는",3],
-  ["scrupulous","세심한",3],["tenacious","집요한",3],["ubiquitous","어디에나 있는",3],["venerate","숭배하다",3],["zealous","열성적인",3],
-  ["abstruse","난해한",3],["aberration","일탈",3],["acrimonious","신랄한",3],["alacrity","민첩함",3],["cacophony","불협화음",3],
-  ["capitulate","항복하다",3],["circumspect","용의주도한",3],["clandestine","은밀한",3],["cogent","설득력 있는",3],["deleterious","해로운",3],
-  ["ephemeral","덧없는",3],["equivocate","얼버무리다",3],["fortuitous","우연한",3],["garrulous","수다스러운",3],["hackneyed","진부한",3],
-  ["impetuous","충동적인",3],["incorrigible","구제불능의",3],["insidious","교활한",3],["laconic","간결한",3],["magnanimous","도량이 큰",3],
-  ["nebulous","불분명한",3],["obfuscate","혼란스럽게 하다",3],["pernicious","치명적인",3],["pragmatic","실용적인",3],["recalcitrant","반항하는",3],
-  ["sanguine","낙관적인",3],["superfluous","불필요한",3],["taciturn","과묵한",3],["vociferous","떠들썩한",3],["wary","경계하는",3],
+/* 9 tiers x 300 = 2700 words. [english, korean] */
+const TIER_META=[{"name":"초등 하급","short":"초하"},{"name":"초등 중급","short":"초중"},{"name":"초등 상급","short":"초상"},{"name":"중등 하급","short":"중하"},{"name":"중등 상급","short":"중상"},{"name":"고등 중급","short":"고중"},{"name":"고등 상급","short":"고상"},{"name":"상급","short":"상급"},{"name":"최상급","short":"최상"}];
+const WORD_TIERS=[[["cat","고양이"],["dog","개"],["cow","소"],["pig","돼지"],["hen","암탉"],["duck","오리"],["fish","물고기"],["bird","새"],["bear","곰"],["lion","사자"],["tiger","호랑이"],["rabbit","토끼"],["mouse","쥐"],["frog","개구리"],["bee","벌"],["ant","개미"],["fox","여우"],["wolf","늑대"],["deer","사슴"],["sheep","양"],["horse","말"],["goat","염소"],["monkey","원숭이"],["elephant","코끼리"],["snake","뱀"],["spider","거미"],["chicken","닭"],["egg","달걀"],["milk","우유"],["bread","빵"],["rice","밥"],["apple","사과"],["banana","바나나"],["grape","포도"],["orange","오렌지"],["lemon","레몬"],["melon","멜론"],["peach","복숭아"],["pear","배(과일)"],["cherry","체리"],["water","물"],["juice","주스"],["tea","차(음료)"],["candy","사탕"],["cake","케이크"],["cookie","쿠키"],["soup","수프"],["meat","고기"],["salt","소금"],["sugar","설탕"],["red","빨강"],["blue","파랑"],["green","초록"],["yellow","노랑"],["black","검정"],["white","하양"],["pink","분홍"],["brown","갈색"],["purple","보라"],["gray","회색"],["one","하나"],["two","둘"],["three","셋"],["four","넷"],["five","다섯"],["six","여섯"],["seven","일곱"],["eight","여덟"],["nine","아홉"],["ten","열"],["mom","엄마"],["dad","아빠"],["baby","아기"],["boy","소년"],["girl","소녀"],["man","남자"],["woman","여자"],["sister","여자형제"],["brother","남자형제"],["friend","친구"],["hand","손"],["foot","발"],["head","머리"],["hair","머리카락"],["eye","눈(신체)"],["ear","귀"],["nose","코"],["mouth","입"],["face","얼굴"],["arm","팔"],["leg","다리(신체)"],["finger","손가락"],["tooth","이(치아)"],["neck","목"],["knee","무릎"],["back","등(신체)"],["heart","심장"],["body","몸"],["skin","피부"],["toe","발가락"],["sun","해"],["moon","달"],["star","별"],["sky","하늘"],["cloud","구름"],["rain","비"],["snow","눈(날씨)"],["wind","바람"],["tree","나무"],["flower","꽃"],["grass","풀"],["leaf","잎"],["river","강"],["sea","바다"],["hill","언덕"],["rock","바위"],["sand","모래"],["fire","불"],["ice","얼음"],["stone","돌"],["house","집"],["room","방"],["door","문"],["window","창문"],["bed","침대"],["chair","의자"],["table","탁자"],["desk","책상"],["box","상자"],["cup","컵"],["book","책"],["pen","펜"],["pencil","연필"],["bag","가방"],["ball","공"],["toy","장난감"],["clock","시계"],["key","열쇠"],["spoon","숟가락"],["fork","포크"],["knife","칼"],["plate","접시"],["dish","그릇"],["bowl","사발"],["car","자동차"],["bus","버스"],["train","기차"],["bike","자전거"],["ship","배(선박)"],["plane","비행기"],["road","길"],["shop","가게"],["school","학교"],["park","공원"],["zoo","동물원"],["farm","농장"],["store","상점"],["bank","은행"],["home","가정"],["map","지도"],["hat","모자"],["cap","야구모자"],["shirt","셔츠"],["shoe","신발"],["sock","양말"],["coat","외투"],["dress","원피스"],["glove","장갑"],["belt","허리띠"],["ring","반지"],["eat","먹다"],["drink","마시다"],["sleep","자다"],["run","달리다"],["walk","걷다"],["jump","뛰다"],["sit","앉다"],["stand","서다"],["go","가다"],["come","오다"],["see","보다"],["look","쳐다보다"],["hear","듣다"],["read","읽다"],["write","쓰다"],["play","놀다"],["sing","노래하다"],["dance","춤추다"],["open","열다"],["close","닫다"],["give","주다"],["take","가져가다"],["make","만들다"],["buy","사다"],["cook","요리하다"],["wash","씻다"],["help","돕다"],["love","사랑하다"],["like","좋아하다"],["want","원하다"],["big","큰"],["small","작은"],["long","긴"],["short","짧은"],["tall","키 큰"],["old","늙은"],["new","새로운"],["young","어린"],["hot","뜨거운"],["cold","차가운"],["good","좋은"],["bad","나쁜"],["happy","행복한"],["sad","슬픈"],["fast","빠른"],["slow","느린"],["high","높은"],["low","낮은"],["easy","쉬운"],["hard","어려운"],["light","가벼운"],["heavy","무거운"],["dark","어두운"],["bright","밝은"],["soft","부드러운"],["loud","시끄러운"],["quiet","조용한"],["warm","따뜻한"],["cool","시원한"],["dry","마른"],["wet","젖은"],["rich","부유한"],["poor","가난한"],["strong","강한"],["weak","약한"],["right","옳은"],["wrong","틀린"],["same","같은"],["nice","멋진"],["kind","친절한"],["day","낮"],["night","밤"],["morning","아침"],["noon","정오"],["time","시간"],["year","해(년)"],["month","달(월)"],["week","주(週)"],["hour","시간(단위)"],["minute","분(分)"],["today","오늘"],["yesterday","어제"],["tomorrow","내일"],["now","지금"],["name","이름"],["age","나이"],["color","색"],["number","숫자"],["word","단어"],["letter","글자"],["up","위로"],["down","아래로"],["in","안에"],["out","밖에"],["near","가까운"],["far","먼"],["here","여기"],["there","거기"],["front","앞"],["behind","뒤에"],["yes","응"],["no","아니"],["hello","안녕"],["bye","잘 가"],["thanks","고마워"],["sorry","미안"],["please","제발"],["again","다시"],["very","매우"],["too","너무"],["this","이것"],["that","저것"],["who","누구"],["what","무엇"],["where","어디"],["when","언제"],["why","왜"],["how","어떻게"],["many","많은"],["few","적은"],["every","모든"],["each","각각"],["only","오직"],["more","더"],["most","가장"],["first","첫째"],["last","마지막"],["next","다음"],["together","함께"],["alone","혼자"]],[["family","가족"],["parent","부모"],["son","아들"],["daughter","딸"],["uncle","삼촌"],["aunt","이모/고모"],["cousin","사촌"],["grandfather","할아버지"],["grandmother","할머니"],["child","아이"],["people","사람들"],["person","사람"],["king","왕"],["queen","여왕"],["doctor","의사"],["nurse","간호사"],["teacher","선생님"],["student","학생"],["farmer","농부"],["police","경찰"],["driver","운전사"],["singer","가수"],["painter","화가"],["writer","작가"],["dancer","무용수"],["baker","제빵사"],["pilot","조종사"],["sailor","선원"],["soldier","군인"],["smile","미소"],["tear","눈물"],["voice","목소리"],["story","이야기"],["song","노래"],["game","게임"],["picture","그림"],["music","음악"],["movie","영화"],["paper","종이"],["card","카드"],["note","쪽지"],["gift","선물"],["present","선물(물건)"],["prize","상(賞)"],["kite","연(놀이)"],["doll","인형"],["balloon","풍선"],["marble","구슬"],["puzzle","퍼즐"],["blocks","블록"],["drum","북"],["flute","피리"],["guitar","기타(악기)"],["apple pie","애플파이"],["pizza","피자"],["burger","햄버거"],["noodle","국수"],["sandwich","샌드위치"],["salad","샐러드"],["cheese","치즈"],["butter","버터"],["jam","잼"],["honey","꿀"],["potato","감자"],["tomato","토마토"],["carrot","당근"],["onion","양파"],["corn","옥수수"],["bean","콩"],["pea","완두콩"],["cabbage","양배추"],["cucumber","오이"],["pumpkin","호박"],["strawberry","딸기"],["watermelon","수박"],["pineapple","파인애플"],["mango","망고"],["kiwi","키위"],["plum","자두"],["apricot","살구"],["coconut","코코넛"],["berry","산딸기류"],["nut","견과"],["pants","바지"],["skirt","치마"],["jacket","재킷"],["sweater","스웨터"],["scarf","목도리"],["boot","부츠"],["sandal","샌들"],["slipper","슬리퍼"],["kitchen","부엌"],["bathroom","욕실"],["bedroom","침실"],["garden","정원"],["garage","차고"],["roof","지붕"],["wall","벽"],["floor","바닥"],["stairs","계단"],["gate","대문"],["sofa","소파"],["lamp","램프"],["mirror","거울"],["shelf","선반"],["drawer","서랍"],["basket","바구니"],["bottle","병"],["glass","유리컵"],["towel","수건"],["blanket","담요"],["town","마을(읍)"],["city","도시"],["village","마을"],["country","나라"],["street","거리"],["bridge","다리(교량)"],["market","시장"],["church","교회"],["hospital","병원"],["library","도서관"],["museum","박물관"],["theater","극장"],["station","역(驛)"],["airport","공항"],["hotel","호텔"],["office","사무실"],["factory","공장"],["restaurant","식당"],["bakery","빵집"],["post office","우체국"],["spring","봄"],["summer","여름"],["autumn","가을"],["winter","겨울"],["weather","날씨"],["storm","폭풍"],["thunder","천둥"],["rainbow","무지개"],["fog","안개"],["frost","서리"],["mountain","산"],["valley","계곡"],["field","들판"],["forest","숲"],["lake","호수"],["pond","연못"],["island","섬"],["beach","해변"],["cave","동굴"],["desert","사막"],["evening","저녁"],["afternoon","오후"],["midnight","자정"],["second","초(시간)"],["weekend","주말"],["holiday","휴일"],["Monday","월요일"],["Tuesday","화요일"],["Wednesday","수요일"],["Thursday","목요일"],["Friday","금요일"],["Saturday","토요일"],["Sunday","일요일"],["season","계절"],["calendar","달력"],["learn","배우다"],["teach","가르치다"],["study","공부하다"],["think","생각하다"],["know","알다"],["remember","기억하다"],["forget","잊다"],["understand","이해하다"],["answer","대답하다"],["ask","묻다"],["talk","말하다"],["speak","이야기하다"],["tell","말해주다"],["call","부르다"],["shout","소리치다"],["whisper","속삭이다"],["listen","귀 기울이다"],["repeat","반복하다"],["spell","철자를 말하다"],["mean","뜻하다"],["start","시작하다"],["stop","멈추다"],["finish","끝내다"],["try","시도하다"],["use","사용하다"],["need","필요하다"],["keep","유지하다"],["bring","가져오다"],["carry","나르다"],["hold","잡다"],["push","밀다"],["pull","당기다"],["throw","던지다"],["catch","받다"],["kick","차다"],["hit","치다"],["climb","오르다"],["fall","넘어지다"],["fly","날다"],["swim","수영하다"],["ride","타다"],["drive","운전하다"],["travel","여행하다"],["visit","방문하다"],["move","움직이다"],["turn","돌리다"],["follow","따르다"],["lead","이끌다"],["meet","만나다"],["leave","떠나다"],["clean","청소하다"],["cut","자르다"],["draw","그리다"],["paint","칠하다"],["build","짓다"],["fix","고치다"],["break","부수다"],["fill","채우다"],["pour","붓다"],["mix","섞다"],["beautiful","아름다운"],["pretty","예쁜"],["ugly","못생긴"],["clever","영리한"],["funny","웃긴"],["lazy","게으른"],["busy","바쁜"],["angry","화난"],["afraid","무서워하는"],["tired","피곤한"],["hungry","배고픈"],["thirsty","목마른"],["sick","아픈"],["healthy","건강한"],["safe","안전한"],["free","자유로운"],["ready","준비된"],["sure","확실한"],["true","진실의"],["false","거짓의"],["sweet","달콤한"],["sour","신"],["bitter","쓴"],["salty","짠"],["fresh","신선한"],["dirty","지저분한"],["smooth","매끄러운"],["rough","거친"],["sharp","날카로운"],["round","둥근"],["square","네모난"],["flat","평평한"],["deep","깊은"],["wide","넓은"],["narrow","좁은"],["thick","두꺼운"],["thin","얇은"],["empty","텅 빈"],["always","항상"],["usually","보통"],["often","자주"],["sometimes","가끔"],["never","결코 아닌"],["soon","곧"],["early","일찍"],["late","늦게"],["already","이미"],["still","여전히"],["whale","고래"],["shark","상어"],["dolphin","돌고래"],["turtle","거북"],["crab","게"],["shrimp","새우"],["octopus","문어"],["penguin","펭귄"],["giraffe","기린"],["zebra","얼룩말"],["kangaroo","캥거루"],["camel","낙타"],["donkey","당나귀"],["squirrel","다람쥐"],["owl","올빼미"],["eagle","독수리"],["dove","비둘기"],["parrot","앵무새"],["peacock","공작"],["crocodile","악어"],["dinosaur","공룡"],["dragon","용"],["butterfly","나비"],["ladybug","무당벌레"],["grasshopper","메뚜기"],["caterpillar","애벌레"]],[["world","세계"],["nature","자연"],["earth","지구"],["ground","땅"],["air","공기"],["space","우주"],["planet","행성"],["ocean","대양"],["climate","기후(기본)"],["animal","동물"],["plant","식물"],["insect","곤충"],["reptile","파충류"],["mammal","포유류"],["creature","생물"],["wing","날개"],["tail","꼬리"],["feather","깃털"],["fur","털"],["bone","뼈"],["blood","피"],["brain","뇌"],["muscle","근육"],["lung","폐"],["stomach","위(장기)"],["breath","숨"],["health","건강"],["energy","에너지"],["food","음식"],["meal","식사"],["breakfast","아침식사"],["lunch","점심"],["dinner","저녁식사"],["snack","간식"],["recipe","조리법"],["taste","맛"],["smell","냄새"],["flavor","향미"],["clothes","옷"],["uniform","교복/제복"],["pocket","주머니"],["button","단추"],["zipper","지퍼"],["collar","옷깃"],["sleeve","소매"],["fashion","유행"],["style","스타일"],["size","크기"],["machine","기계"],["engine","엔진"],["wheel","바퀴"],["tool","도구"],["hammer","망치"],["nail","못"],["screw","나사"],["rope","밧줄"],["ladder","사다리"],["battery","건전지"],["phone","전화기"],["camera","사진기"],["computer","컴퓨터"],["screen","화면"],["radio","라디오"],["television","텔레비전"],["internet","인터넷"],["robot","로봇"],["rocket","로켓"],["satellite","인공위성"],["money","돈"],["coin","동전"],["price","가격"],["cost","비용"],["change","거스름돈"],["sale","판매/세일"],["customer","손님"],["owner","주인"],["business","사업"],["job","일자리"],["work","일"],["worker","일꾼"],["boss","상사"],["team","팀"],["group","무리"],["member","구성원"],["leader","지도자"],["helper","조력자"],["partner","짝"],["subject","과목"],["lesson","수업"],["class","학급"],["grade","성적/학년"],["test","시험"],["exam","시험(정식)"],["homework","숙제"],["notebook","공책"],["textbook","교과서"],["dictionary","사전"],["math","수학"],["science","과학"],["history","역사"],["art","미술"],["English","영어"],["language","언어"],["poem","시(詩)"],["novel","소설"],["trip","여행"],["journey","긴 여행"],["ticket","표"],["luggage","짐"],["passport","여권"],["tourist","관광객"],["guide","안내인"],["route","경로"],["distance","거리(길이)"],["direction","방향"],["north","북쪽"],["south","남쪽"],["east","동쪽"],["west","서쪽"],["left","왼쪽"],["center","중앙"],["corner","모퉁이"],["edge","가장자리"],["border","경계"],["sport","스포츠"],["soccer","축구"],["baseball","야구"],["basketball","농구"],["tennis","테니스"],["swimming","수영"],["race","경주"],["match","경기"],["team sport","단체 운동"],["coach","코치"],["winner","승자"],["loser","패자"],["score","점수"],["goal","골/목표"],["point","점(점수)"],["rule","규칙"],["player","선수"],["referee","심판"],["medal","메달"],["trophy","트로피"],["feeling","감정"],["mood","기분"],["joy","기쁨"],["fear","두려움"],["anger","분노"],["hope","희망"],["dream","꿈"],["wish","소원"],["luck","운"],["surprise","놀람"],["idea","생각"],["plan","계획"],["reason","이유"],["problem","문제"],["question","질문"],["example","예시"],["fact","사실"],["truth","진실"],["lie","거짓말"],["event","사건/행사"],["party","파티"],["festival","축제"],["concert","음악회"],["meeting","회의"],["wedding","결혼식"],["birthday","생일"],["vacation","방학/휴가"],["ceremony","의식"],["parade","행렬"],["create","창조하다"],["invent","발명하다"],["design","디자인하다"],["produce","생산하다"],["grow","기르다"],["raise","키우다"],["feed","먹이다"],["protect","보호하다"],["save","구하다"],["share","나누다"],["collect","모으다"],["choose","고르다"],["decide","결정하다"],["agree","동의하다"],["refuse","거절하다"],["allow","허락하다"],["promise","약속하다"],["believe","믿다"],["enjoy","즐기다"],["relax","쉬다"],["rest","휴식하다"],["laugh","웃다"],["cry","울다"],["worry","걱정하다"],["care","돌보다"],["hate","싫어하다"],["miss","그리워하다"],["discover","발견하다"],["explore","탐험하다"],["search","찾다"],["find","찾아내다"],["lose","잃다"],["win","이기다"],["beat","이기다(상대를)"],["join","가입하다"],["compare","비교하다"],["measure","측정하다"],["important","중요한"],["special","특별한"],["famous","유명한"],["popular","인기 있는"],["common","흔한"],["strange","이상한"],["wonderful","멋진"],["terrible","끔찍한"],["serious","진지한"],["simple","간단한"],["difficult","어려운"],["possible","가능한"],["impossible","불가능한"],["real","진짜의"],["useful","유용한"],["useless","쓸모없는"],["dangerous","위험한"],["careful","조심스러운"],["polite","예의 바른"],["honest","정직한"],["brave","용감한"],["gentle","온화한"],["calm","침착한"],["proud","자랑스러운"],["lonely","외로운"],["nervous","긴장한"],["excited","신난"],["bored","지루한"],["curious","호기심 많은"],["shy","수줍은"],["quick","재빠른"],["clear","분명한"],["silent","조용한"],["tight","꽉 끼는"],["enough","충분한"],["extra","여분의"],["whole","전체의"],["half","절반의"],["double","두 배의"],["single","하나의"],["several","여러"],["various","다양한"],["certain","어떤/확실한"],["main","주된"],["because","때문에"],["although","비록 ~지만"],["however","그러나"],["therefore","그러므로"],["instead","대신에"],["maybe","아마"],["perhaps","어쩌면"],["finally","마침내"],["suddenly","갑자기"],["quickly","빨리"],["history book","역사책"],["weather map","일기도"],["school trip","수학여행"],["flower pot","화분"],["traffic light","신호등"],["fire fighter","소방관"],["mail box","우체통"],["swimming pool","수영장"],["bus stop","버스정류장"],["shopping mall","쇼핑몰"],["above","위에"],["below","아래에"],["between","사이에"],["among","가운데"],["around","주위에"],["through","통과하여"],["across","가로질러"],["along","~을 따라"],["against","~에 반대하여"],["toward","~쪽으로"],["backpack","책가방"],["classroom","교실"],["playground","운동장"],["blackboard","칠판"],["chalk","분필"],["eraser","지우개"],["ruler","자(측정)"],["scissors","가위"],["glue","접착제"],["crayon","크레용"],["envelope","봉투"],["stamp","우표"],["diary","일기"],["album","앨범"],["magazine","잡지"],["newspaper","신문"]],[["accept","받아들이다"],["achieve","성취하다"],["act","행동하다"],["add","더하다"],["admire","감탄하다"],["admit","인정하다"],["advise","충고하다"],["afford","여유가 되다"],["aim","목표하다"],["appear","나타나다"],["apply","지원하다"],["argue","논쟁하다"],["arrange","정리하다"],["arrive","도착하다"],["attack","공격하다"],["attend","참석하다"],["avoid","피하다"],["bake","굽다"],["behave","행동하다"],["belong","속하다"],["bend","구부리다"],["blame","비난하다"],["borrow","빌리다"],["bother","귀찮게 하다"],["burn","태우다"],["cause","야기하다"],["celebrate","축하하다"],["chase","쫓다"],["cheat","속이다"],["check","확인하다"],["complain","불평하다"],["complete","완성하다"],["connect","연결하다"],["consider","고려하다"],["contain","포함하다"],["continue","계속하다"],["control","통제하다"],["count","세다"],["cover","덮다"],["crash","충돌하다"],["cross","건너다"],["deliver","배달하다"],["deny","부인하다"],["depend","의존하다"],["describe","묘사하다"],["destroy","파괴하다"],["develop","발전시키다"],["disappear","사라지다"],["divide","나누다"],["doubt","의심하다"],["earn","(돈을) 벌다"],["escape","탈출하다"],["examine","조사하다"],["excuse","용서하다"],["expect","기대하다"],["explain","설명하다"],["express","표현하다"],["fail","실패하다"],["fight","싸우다"],["float","뜨다"],["fold","접다"],["force","강요하다"],["gather","모으다"],["greet","인사하다"],["guess","추측하다"],["hang","걸다"],["happen","일어나다"],["heat","가열하다"],["hide","숨기다"],["hire","고용하다"],["hunt","사냥하다"],["hurry","서두르다"],["hurt","다치게 하다"],["imagine","상상하다"],["improve","향상시키다"],["include","포함하다"],["increase","증가하다"],["influence","영향을 주다"],["introduce","소개하다"],["invite","초대하다"],["judge","판단하다"],["knock","두드리다"],["lay","놓다"],["lend","빌려주다"],["manage","관리하다"],["mark","표시하다"],["matter","중요하다"],["melt","녹다"],["mention","언급하다"],["notice","알아차리다"],["obey","복종하다"],["offer","제안하다"],["order","주문하다"],["own","소유하다"],["pack","싸다"],["pass","지나가다"],["pause","멈추다"],["perform","공연하다"],["pick","고르다"],["praise","칭찬하다"],["prepare","준비하다"],["prevent","예방하다"],["print","인쇄하다"],["prove","증명하다"],["provide","제공하다"],["punish","벌하다"],["realize","깨닫다"],["receive","받다"],["recognize","알아보다"],["recommend","추천하다"],["reduce","줄이다"],["regret","후회하다"],["remain","남다"],["remind","상기시키다"],["remove","제거하다"],["repair","수리하다"],["replace","교체하다"],["reply","답하다"],["report","보고하다"],["respect","존경하다"],["return","돌아가다"],["reward","보상하다"],["rise","오르다"],["roll","구르다"],["rush","돌진하다"],["satisfy","만족시키다"],["seem","~처럼 보이다"],["separate","분리하다"],["serve","제공하다"],["settle","정착하다"],["shake","흔들다"],["shine","빛나다"],["shoot","쏘다"],["sink","가라앉다"],["slide","미끄러지다"],["solve","해결하다"],["spread","퍼지다"],["stare","응시하다"],["steal","훔치다"],["stick","붙이다"],["succeed","성공하다"],["suggest","제안하다"],["supply","공급하다"],["support","지지하다"],["suppose","가정하다"],["survive","살아남다"],["swallow","삼키다"],["tie","묶다"],["touch","만지다"],["trade","거래하다"],["treat","대하다"],["trust","신뢰하다"],["waste","낭비하다"],["wave","흔들다"],["weigh","무게가 나가다"],["wonder","궁금해하다"],["wrap","포장하다"],["ability","능력"],["accident","사고"],["action","행동"],["activity","활동"],["advice","조언"],["adventure","모험"],["amount","양"],["angle","각도"],["area","지역"],["army","군대"],["attention","주의"],["beauty","아름다움"],["benefit","이익"],["bill","청구서"],["branch","가지"],["captain","선장"],["century","세기"],["chance","기회"],["character","성격"],["choice","선택"],["company","회사"],["condition","상태"],["contest","대회"],["culture","문화"],["custom","관습"],["damage","손상"],["danger","위험"],["decision","결정"],["detail","세부사항"],["difference","차이"],["dust","먼지"],["effort","노력"],["enemy","적"],["experience","경험"],["experiment","실험"],["expert","전문가"],["fault","잘못"],["favor","호의"],["flag","깃발"],["flood","홍수"],["fortune","재산/운"],["freedom","자유"],["goods","상품"],["government","정부"],["habit","습관"],["harvest","수확"],["height","높이"],["hole","구멍"],["hunger","굶주림"],["industry","산업"],["instrument","악기/기구"],["interest","흥미"],["invention","발명"],["item","항목"],["knowledge","지식"],["labor","노동"],["law","법"],["level","수준"],["material","재료"],["meaning","의미"],["medicine","약"],["method","방법"],["mistake","실수"],["moment","순간"],["nation","국가"],["neighbor","이웃"],["opinion","의견"],["opportunity","기회(좋은)"],["pain","고통"],["passenger","승객"],["period","기간"],["physics","물리학"],["pile","더미"],["pleasure","즐거움"],["poison","독"],["population","인구"],["position","위치"],["poverty","가난"],["power","힘"],["practice","연습"],["president","대통령"],["pressure","압력"],["process","과정"],["product","제품"],["progress","진보"],["project","계획/사업"],["purpose","목적"],["quality","질"],["quantity","양(量)"],["record","기록"],["region","지역"],["relationship","관계"],["result","결과"],["role","역할"],["root","뿌리"],["safety","안전"],["scene","장면"],["sense","감각"],["service","봉사"],["shape","모양"],["shelter","피난처"],["signal","신호"],["silence","침묵"],["situation","상황"],["skill","기술"],["society","사회"],["soil","토양"],["soul","영혼"],["sound","소리"],["source","원천"],["speech","연설"],["spirit","정신"],["standard","기준"],["ceiling","천장"],["basement","지하실"],["corridor","복도"],["entrance","입구"],["exit","출구"],["elevator","엘리베이터"],["escalator","에스컬레이터"],["platform","승강장"],["highway","고속도로"],["sidewalk","인도"],["crossroad","교차로"],["lane","차선"],["harbor","항구"],["tunnel","터널"],["fountain","분수"],["statue","조각상"],["monument","기념비"],["tower","탑"],["castle","성(건물)"],["palace","궁전"],["temple","사원"],["tomb","무덤"],["cemetery","묘지"],["barn","헛간"],["warehouse","창고"],["workshop","작업장"],["laboratory","실험실"],["stadium","경기장"],["gymnasium","체육관"],["clinic","진료소"]],[["abandon","버리다"],["absolute","절대적인"],["abstract","추상적인"],["abuse","남용하다"],["accompany","동반하다"],["accomplish","완수하다"],["accurate","정확한"],["acquire","습득하다"],["adapt","적응하다"],["adequate","적절한"],["adjust","조정하다"],["adopt","채택하다"],["advance","전진하다"],["affect","영향을 미치다"],["aggressive","공격적인"],["alternative","대안"],["amaze","놀라게 하다"],["ancient","고대의"],["announce","발표하다"],["annual","연례의"],["anticipate","예상하다"],["anxious","불안한"],["apparent","명백한"],["appeal","호소하다"],["appointment","약속(예약)"],["appreciate","감사하다"],["approach","접근하다"],["appropriate","적절한"],["approve","승인하다"],["argument","논쟁"],["aspect","측면"],["assist","돕다"],["associate","연관짓다"],["assume","가정하다"],["assure","보장하다"],["atmosphere","분위기/대기"],["attempt","시도하다"],["attitude","태도"],["attract","끌어당기다"],["audience","청중"],["authority","권위"],["available","이용 가능한"],["average","평균의"],["aware","인식하는"],["awkward","어색한"],["balance","균형"],["basis","기초"],["behavior","행동"],["beneath","아래에"],["bless","축복하다"],["brief","간단한"],["broad","넓은"],["budget","예산"],["burden","부담"],["calculate","계산하다"],["cancel","취소하다"],["capable","유능한"],["capacity","수용력"],["career","경력"],["cautious","신중한"],["challenge","도전"],["characteristic","특징"],["charge","요금을 부과하다"],["chemical","화학의"],["citizen","시민"],["civil","시민의"],["claim","주장하다"],["classify","분류하다"],["client","고객"],["colleague","동료"],["combine","결합하다"],["comment","논평하다"],["commercial","상업의"],["commit","저지르다"],["communicate","의사소통하다"],["community","공동체"],["compete","경쟁하다"],["complex","복잡한"],["concentrate","집중하다"],["concept","개념"],["concern","걱정"],["conclude","결론짓다"],["conduct","수행하다"],["confident","자신 있는"],["confirm","확인하다"],["conflict","갈등"],["confuse","혼란시키다"],["conscious","의식하는"],["consequence","결과"],["conserve","보존하다"],["considerable","상당한"],["consist","구성되다"],["constant","끊임없는"],["construct","건설하다"],["consume","소비하다"],["contact","연락하다"],["contemporary","현대의"],["content","내용"],["context","맥락"],["contract","계약"],["contrast","대조"],["contribute","기여하다"],["convenient","편리한"],["convince","설득하다"],["cooperate","협력하다"],["core","핵심"],["corporation","기업"],["correspond","일치하다"],["cral","기다"],["creative","창의적인"],["crime","범죄"],["crisis","위기"],["critical","비판적인"],["crop","농작물"],["crowd","군중"],["crucial","결정적인"],["current","현재의"],["debate","토론"],["decade","십 년"],["declare","선언하다"],["decline","감소하다"],["decorate","장식하다"],["decrease","줄다"],["define","정의하다"],["definite","확실한"],["delay","지연시키다"],["deliberate","고의의"],["delicate","섬세한"],["demand","요구하다"],["demonstrate","보여주다"],["dense","빽빽한"],["depress","낙담시키다"],["deserve","받을 만하다"],["desire","욕망"],["despite","~에도 불구하고"],["detect","탐지하다"],["determine","결정하다"],["device","장치"],["devote","바치다"],["dialogue","대화"],["differ","다르다"],["digest","소화하다"],["dignity","존엄"],["diligent","부지런한"],["dim","희미한"],["direct","직접의"],["disagree","의견이 다르다"],["disappoint","실망시키다"],["disaster","재해"],["discipline","규율"],["discount","할인"],["discourage","낙심시키다"],["discuss","논의하다"],["disease","질병"],["disgust","역겹게 하다"],["dismiss","해고하다"],["display","전시하다"],["dispose","처분하다"],["distant","먼"],["distinct","뚜렷한"],["distinguish","구별하다"],["distribute","분배하다"],["disturb","방해하다"],["diverse","다양한"],["document","문서"],["domestic","국내의"],["dominate","지배하다"],["donate","기부하다"],["dramatic","극적인"],["due","예정된"],["duty","의무"],["eager","열망하는"],["economy","경제"],["edit","편집하다"],["educate","교육하다"],["efficient","효율적인"],["elect","선출하다"],["element","요소"],["eliminate","제거하다"],["embarrass","당황하게 하다"],["emerge","나타나다"],["emotion","감정"],["emphasize","강조하다"],["employ","고용하다"],["enable","가능하게 하다"],["encounter","마주치다"],["encourage","격려하다"],["endure","견디다"],["engage","참여시키다"],["enormous","거대한"],["ensure","보장하다"],["entertain","즐겁게 하다"],["enthusiasm","열정"],["entire","전체의"],["environment","환경"],["equal","동등한"],["equip","갖추다"],["essential","필수적인"],["establish","설립하다"],["estimate","추정하다"],["evaluate","평가하다"],["eventually","결국"],["evidence","증거"],["evolve","진화하다"],["exact","정확한"],["exaggerate","과장하다"],["exceed","초과하다"],["excellent","뛰어난"],["exchange","교환하다"],["exclude","제외하다"],["exhaust","고갈시키다"],["exist","존재하다"],["expand","확장하다"],["expense","비용"],["explode","폭발하다"],["expose","노출시키다"],["extend","확장하다"],["external","외부의"],["extreme","극단의"],["facility","시설"],["factor","요인"],["familiar","익숙한"],["fascinate","매혹하다"],["fate","운명"],["feature","특징"],["figure","수치/인물"],["finance","재정"],["flexible","유연한"],["focus","집중하다"],["forbid","금지하다"],["forecast","예보하다"],["formal","공식적인"],["former","이전의"],["foundation","토대"],["frequent","빈번한"],["frustrate","좌절시키다"],["function","기능"],["fundamental","근본적인"],["furthermore","게다가"],["gain","얻다"],["generate","발생시키다"],["generous","관대한"],["genuine","진짜의"],["gesture","몸짓"],["glory","영광"],["govern","통치하다"],["gradual","점진적인"],["grant","부여하다"],["grateful","감사하는"],["guarantee","보증하다"],["guilty","죄책감의"],["handle","다루다"],["harm","해치다"],["harsh","가혹한"],["heritage","유산"],["hesitate","망설이다"],["highlight","강조하다"],["honor","명예"],["horror","공포"],["humble","겸손한"],["identify","식별하다"],["ignore","무시하다"],["illustrate","예시하다"],["imitate","모방하다"],["occupy","차지하다"],["pursue","추구하다"],["overcome","극복하다"],["undergo","겪다"],["resemble","닮다"],["restrict","제한하다"],["retain","보유하다"],["reveal","드러내다"],["seek","찾다"],["split","쪼개다"],["strive","분투하다"],["submit","제출하다"],["tend","경향이 있다"],["transform","변형하다"],["transmit","전송하다"],["undertake","떠맡다"],["utilize","활용하다"],["vary","다양하게 하다"],["violate","위반하다"],["withdraw","철회하다"],["yield","양보하다"],["restrain","억누르다"],["retrieve","회수하다"],["reinforce","강화하다"],["ambition","야망"],["anxiety","불안(감)"],["legacy","유산(상속)"],["motive","동기"],["outcome","결과(성과)"],["perspective","관점"],["phenomenon","현상"],["portion","부분"],["priority","우선순위"],["prospect","전망"],["remedy","해결책"],["resident","거주자"]],[["accommodate","수용하다"],["accumulate","축적하다"],["accustomed","익숙한"],["acknowledge","인정하다"],["acute","급성의/예리한"],["adjacent","인접한"],["administer","관리하다"],["adolescent","청소년"],["advocate","옹호하다"],["aesthetic","미적인"],["affirm","단언하다"],["aggregate","총계"],["alleviate","완화하다"],["allocate","할당하다"],["ambiguous","애매한"],["ample","충분한"],["analyze","분석하다"],["apparatus","기구"],["approximate","대략의"],["arbitrary","임의의"],["articulate","또렷이 말하다"],["ascend","오르다"],["aspire","열망하다"],["assemble","조립하다"],["assert","주장하다"],["assess","평가하다"],["assign","할당하다"],["assumption","가정"],["attain","달성하다"],["attribute","~의 탓으로 돌리다"],["authentic","진짜의"],["autonomy","자율성"],["beneficial","유익한"],["bias","편견"],["bond","유대"],["boost","촉진하다"],["boundary","경계"],["breakthrough","돌파구"],["brilliant","뛰어난"],["bureau","부서"],["candidate","후보자"],["capture","포획하다"],["category","범주"],["cease","멈추다"],["chronic","만성의"],["circumstance","상황"],["cite","인용하다"],["civic","시민의"],["clarify","명확히 하다"],["coherent","일관된"],["coincide","일치하다"],["collapse","붕괴하다"],["commence","시작하다"],["commodity","상품"],["compel","강요하다"],["compensate","보상하다"],["competent","유능한"],["compile","편집하다"],["complement","보완하다"],["comprehend","이해하다"],["comprehensive","포괄적인"],["comprise","구성하다"],["compromise","타협하다"],["conceal","숨기다"],["concede","인정하다"],["concise","간결한"],["condemn","비난하다"],["confine","제한하다"],["conform","따르다"],["confront","맞서다"],["consecutive","연속적인"],["consensus","합의"],["consent","동의"],["consistent","일관된"],["conspicuous","눈에 띄는"],["constitute","구성하다"],["constrain","제약하다"],["consult","상담하다"],["contaminate","오염시키다"],["contempt","경멸"],["contend","다투다"],["contradict","모순되다"],["controversy","논란"],["conventional","전통적인"],["convey","전달하다"],["cope","대처하다"],["correlate","상관관계가 있다"],["corrupt","부패한"],["counsel","조언하다"],["counterpart","상대방"],["credible","믿을 만한"],["criteria","기준"],["cultivate","경작하다"],["cumulative","누적되는"],["curb","억제하다"],["decay","부패하다"],["deceive","속이다"],["dedicate","헌신하다"],["deduce","추론하다"],["defect","결함"],["deficient","부족한"],["degrade","저하시키다"],["delegate","위임하다"],["deliberately","고의로"],["denote","나타내다"],["depict","묘사하다"],["deprive","박탈하다"],["derive","유래하다"],["descend","내려가다"],["designate","지정하다"],["desperate","절박한"],["deteriorate","악화되다"],["deviate","벗어나다"],["devise","고안하다"],["diagnose","진단하다"],["diminish","줄이다"],["discard","버리다"],["discern","식별하다"],["disclose","폭로하다"],["discrete","별개의"],["discriminate","차별하다"],["dispense","나눠주다"],["disperse","흩어지다"],["displace","대체하다"],["dispute","분쟁"],["disrupt","방해하다"],["dissolve","녹이다"],["distort","왜곡하다"],["distract","산만하게 하다"],["divert","전환하다"],["domain","영역"],["dominant","지배적인"],["drastic","급격한"],["durable","내구성 있는"],["dynamic","역동적인"],["eccentric","괴짜의"],["elaborate","정교한"],["elicit","이끌어내다"],["eligible","자격이 있는"],["eloquent","웅변의"],["embrace","받아들이다"],["emit","방출하다"],["empirical","경험적인"],["endeavor","노력하다"],["endorse","지지하다"],["enhance","향상시키다"],["enlighten","계몽하다"],["enrich","풍요롭게 하다"],["entail","수반하다"],["entitle","자격을 주다"],["equivalent","동등한"],["erode","침식하다"],["erupt","분출하다"],["evident","명백한"],["evoke","불러일으키다"],["exceptional","예외적인"],["exclusive","독점적인"],["execute","실행하다"],["exemplify","예시하다"],["exert","발휘하다"],["exhibit","전시하다"],["exotic","이국적인"],["expel","추방하다"],["explicit","명백한"],["exploit","착취하다"],["exquisite","정교한"],["extensive","광범위한"],["extract","추출하다"],["facilitate","촉진하다"],["feasible","실현 가능한"],["fertile","비옥한"],["flaw","결함"],["fluctuate","변동하다"],["fluent","유창한"],["formulate","공식화하다"],["fragile","부서지기 쉬운"],["framework","틀"],["fraud","사기"],["fulfill","이행하다"],["furnish","제공하다"],["genetic","유전의"],["grasp","파악하다"],["gratitude","감사"],["grievance","불만"],["halt","중단하다"],["harness","활용하다"],["hierarchy","위계"],["hinder","방해하다"],["humid","습한"],["hypothesis","가설"],["identical","동일한"],["ideology","이념"],["ignite","점화하다"],["illuminate","밝히다"],["illusion","착각"],["immense","엄청난"],["immune","면역의"],["impair","손상시키다"],["impartial","공정한"],["impede","방해하다"],["imperative","필수적인"],["implement","시행하다"],["implicit","암시적인"],["imply","암시하다"],["impose","부과하다"],["impressive","인상적인"],["incentive","동기"],["incline","기울다"],["incorporate","포함하다"],["incredible","믿기 어려운"],["indifferent","무관심한"],["indispensable","필수의"],["induce","유도하다"],["indulge","탐닉하다"],["inevitable","불가피한"],["infer","추론하다"],["inherent","내재된"],["inhibit","억제하다"],["initiate","착수하다"],["innate","타고난"],["innovative","혁신적인"],["insight","통찰"],["inspect","점검하다"],["inspire","영감을 주다"],["instinct","본능"],["integrate","통합하다"],["integrity","진실성"],["intellectual","지적인"],["intense","강렬한"],["interact","상호작용하다"],["interfere","간섭하다"],["interpret","해석하다"],["interval","간격"],["intervene","개입하다"],["intimate","친밀한"],["intricate","복잡한"],["intrinsic","본질적인"],["intuition","직관"],["invade","침략하다"],["investigate","조사하다"],["invoke","불러내다"],["irritate","짜증나게 하다"],["isolate","고립시키다"],["justify","정당화하다"],["coherence","일관성"],["cohesion","결속"],["compilation","편집물"],["complication","복잡함"],["comprehension","이해력"],["compression","압축"],["conception","착상"],["confidentiality","기밀성"],["configuration","구성"],["confrontation","대립"],["consolidation","통합"],["consultation","상담"],["contemplation","사색"],["continuity","연속성"],["contraction","수축"],["correlation","상관관계"],["correspondence","서신"],["credibility","신뢰성"],["culmination","정점"],["deception","속임수"],["dedication","헌신"],["deduction","추론"],["deficiency","결핍"],["definition","정의"],["degradation","저하"],["delegation","대표단"],["deprivation","박탈"],["derivation","유도"],["designation","지정"],["destination","목적지"],["deterioration","악화"],["devastation","황폐화"],["differentiation","분화"],["dimension","차원"],["disclosure","폭로"],["discretion","재량"],["dispersion","분산"],["distinction","차이"],["distortion","왜곡"],["distraction","주의산만"],["diversion","기분전환"],["doctrine","교리"],["dominance","우세"],["excerpt","발췌"],["excess","과잉"],["expansion","확장"],["expenditure","지출"],["fabrication","조작"],["fluctuation","변동"],["formation","형성"],["fragment","조각"],["fraction","일부"],["friction","마찰"],["fusion","융합"],["generosity","관대함"],["gravity","중력"]],[["abolish","폐지하다"],["abound","풍부하다"],["abrupt","갑작스러운"],["absorb","흡수하다"],["absurd","터무니없는"],["abundant","풍부한"],["accelerate","가속하다"],["accessible","접근 가능한"],["acclaim","찬사"],["accountable","책임이 있는"],["adamant","단호한"],["adhere","고수하다"],["adjourn","휴회하다"],["admonish","훈계하다"],["adverse","불리한"],["advent","출현"],["affluent","부유한"],["aggravate","악화시키다"],["agony","고통"],["akin","유사한"],["alienate","소외시키다"],["allege","주장하다"],["ally","동맹"],["aloof","냉담한"],["ambivalent","양면적인"],["amend","수정하다"],["amiable","상냥한"],["analogy","유추"],["anguish","번민"],["animosity","적의"],["annihilate","전멸시키다"],["anonymous","익명의"],["antagonist","적대자"],["apathy","무관심"],["appease","달래다"],["apprehend","체포하다/이해하다"],["apt","적절한"],["arduous","고된"],["arrogant","거만한"],["ascertain","확인하다"],["aspiration","열망"],["assail","공격하다"],["assimilate","동화하다"],["astonish","놀라게 하다"],["astute","기민한"],["atrocious","흉악한"],["audacious","대담한"],["augment","증대하다"],["austere","엄격한"],["authoritative","권위 있는"],["avert","피하다"],["barren","불모의"],["belated","뒤늦은"],["benevolent","자비로운"],["betray","배신하다"],["bewilder","당혹하게 하다"],["blatant","노골적인"],["bleak","암울한"],["blunt","무딘"],["bolster","강화하다"],["brevity","간결함"],["brisk","활기찬"],["brittle","부서지기 쉬운"],["brutal","잔인한"],["bustle","북적임"],["candid","솔직한"],["captivate","사로잡다"],["casual","격식 없는"],["censure","비난하다"],["chaos","혼돈"],["charisma","카리스마"],["cherish","소중히 하다"],["clumsy","서투른"],["coalition","연합"],["coerce","강압하다"],["cognitive","인지의"],["coincidence","우연의 일치"],["collaborate","협업하다"],["colossal","거대한"],["commemorate","기념하다"],["commend","칭찬하다"],["commonplace","흔한"],["compassion","연민"],["complacent","자기만족의"],["compliment","칭찬"],["comply","따르다"],["composure","침착"],["comprehensible","이해할 수 있는"],["conciliate","달래다"],["condense","응축하다"],["condone","용납하다"],["conducive","도움이 되는"],["confederate","공모자"],["confer","수여하다"],["confidential","기밀의"],["confound","혼동시키다"],["congenial","마음 맞는"],["conjecture","추측"],["conspire","공모하다"],["constituent","구성 요소"],["contagious","전염성의"],["contemplate","숙고하다"],["contemptuous","경멸하는"],["contingent","상황에 달린"],["contrive","고안하다"],["conundrum","난제"],["convalesce","회복하다"],["convene","소집하다"],["conviction","확신"],["copious","풍부한"],["cordial","다정한"],["corroborate","입증하다"],["counteract","대응하다"],["covert","은밀한"],["credential","자격증"],["credulous","잘 속는"],["culminate","정점에 이르다"],["culprit","범인"],["cunning","교활한"],["curtail","축소하다"],["cynical","냉소적인"],["daunt","기죽게 하다"],["dazzle","눈부시게 하다"],["debilitate","쇠약하게 하다"],["decadent","퇴폐적인"],["deceptive","기만적인"],["decipher","해독하다"],["decisive","결정적인"],["decry","비난하다"],["defer","미루다"],["defiant","반항적인"],["deficit","적자"],["degenerate","퇴화하다"],["dehydrate","탈수시키다"],["delineate","묘사하다"],["delude","속이다"],["demeanor","태도"],["demolish","철거하다"],["denounce","규탄하다"],["deplete","고갈시키다"],["deplore","개탄하다"],["depose","퇴위시키다"],["deprecate","비난하다"],["derelict","버려진"],["deride","조롱하다"],["derogatory","경멸적인"],["desolate","황량한"],["despondent","낙담한"],["destitute","궁핍한"],["detrimental","해로운"],["devastate","황폐화하다"],["devious","교활한"],["devoid","없는"],["dexterity","손재주"],["didactic","교훈적인"],["diffident","자신 없는"],["dilapidated","낡아빠진"],["dilemma","딜레마"],["disconcert","당황하게 하다"],["discreet","신중한"],["discrepancy","불일치"],["disdain","경멸"],["disgrace","불명예"],["disguise","변장하다"],["disheveled","헝클어진"],["disparage","깎아내리다"],["disparity","격차"],["dispassionate","냉정한"],["dispel","떨쳐버리다"],["disposition","기질"],["disseminate","퍼뜨리다"],["dissent","반대"],["dissuade","단념시키다"],["distinctive","독특한"],["diverge","갈라지다"],["divulge","누설하다"],["docile","유순한"],["dormant","휴면의"],["dubious","의심스러운"],["duplicity","표리부동"],["duration","지속 기간"],["eccentricity","기이함"],["eclipse","가리다"],["edible","먹을 수 있는"],["efface","지우다"],["effervescent","활기 넘치는"],["egotism","자기중심"],["elaborate on","상술하다"],["elated","의기양양한"],["elicit from","끌어내다"],["eloquence","웅변"],["elude","교묘히 피하다"],["elusive","붙잡기 어려운"],["emaciated","수척한"],["embark","착수하다"],["embellish","꾸미다"],["eminent","저명한"],["empathy","공감"],["emulate","모방하다"],["enchant","매혹하다"],["encompass","아우르다"],["encroach","침범하다"],["endanger","위태롭게 하다"],["endorse formally","공식 지지하다"],["enduring","지속되는"],["enervate","기력을 빼앗다"],["engross","몰두시키다"],["enigma","수수께끼"],["enmity","적대감"],["ephemeral","덧없는"],["epitome","전형"],["equitable","공정한"],["eradicate","근절하다"],["erratic","변덕스러운"],["erroneous","잘못된"],["erudite","박식한"],["escalate","확대되다"],["esteem","존경"],["estrange","소원하게 하다"],["eternal","영원한"],["euphoria","행복감"],["evade","회피하다"],["evoke emotion","감정을 불러오다"],["exacerbate","악화시키다"],["exalt","칭송하다"],["exasperate","격분시키다"],["exemplary","모범적인"],["exhaustive","철저한"],["exhilarate","들뜨게 하다"],["exonerate","무죄를 입증하다"],["expedient","편의적인"],["expedite","신속히 처리하다"],["explicit detail","명시적 세부"],["exploitation","착취"],["exquisite taste","정교한 취향"],["extol","극찬하다"],["extraneous","관련 없는"],["exuberant","넘치는"],["fortify","강화하다"],["foster","조성하다"],["hamper","방해하다"],["hoard","비축하다"],["impel","몰아대다"],["implore","애원하다"],["impound","압류하다"],["imbue","불어넣다"],["incite","선동하다"],["indict","기소하다"],["infringe","침해하다"],["ingrain","뿌리박다"],["inhabit","거주하다"],["inscribe","새기다"],["insinuate","넌지시 말하다"],["instigate","부추기다"],["insulate","단열하다"],["intercept","가로채다"],["intertwine","뒤얽다"],["intimidate","위협하다"],["inundate","침수시키다"],["invalidate","무효화하다"],["jeopardize","위태롭게 하다"],["juxtapose","나란히 두다"],["lament","애통하다"],["languish","시들다"],["liberate","해방하다"],["loathe","혐오하다"],["magnify","확대하다"],["manipulate","조종하다"],["marginalize","소외시키다"],["mediate","중재하다"],["mitigate","완화하다"],["mobilize","동원하다"],["mock","조롱하다"],["mold","빚다"],["mourn","애도하다"],["nourish","영양을 주다"],["nullify","무효화하다"],["obscure","모호하게 하다"],["obstruct","막다"],["offset","상쇄하다"],["oppress","억압하다"],["orchestrate","조직하다"],["ostracize","배척하다"],["outweigh","능가하다"],["overhaul","전면 점검하다"],["overlap","겹치다"],["overturn","뒤집다"],["penalize","처벌하다"],["perpetuate","영속시키다"],["pertain","관련되다"],["pervade","만연하다"],["placate","달래다"],["plunder","약탈하다"],["ponder","숙고하다"],["precede","앞서다"],["preclude","막다"],["presume","추정하다"],["proclaim","선포하다"],["prolong","연장하다"],["propagate","전파하다"]],[["aberration","일탈"],["abeyance","중지 상태"],["abhor","몹시 싫어하다"],["abjure","포기하다"],["abnegate","버리다"],["abscond","도주하다"],["abstruse","난해한"],["accolade","영예"],["acerbic","신랄한"],["acquiesce","묵인하다"],["acrimony","독설"],["acumen","예리함"],["adjunct","부가물"],["admonition","훈계"],["adroit","능숙한"],["adulate","아첨하다"],["adumbrate","예시하다"],["aegis","보호"],["affable","상냥한"],["affectation","꾸밈"],["aggrandize","확대하다"],["alacrity","민첩함"],["allay","가라앉히다"],["allude","넌지시 말하다"],["aloofness","초연함"],["amalgamate","합병하다"],["ambit","범위"],["ameliorate","개선하다"],["amenable","순종적인"],["amorphous","무정형의"],["anachronism","시대착오"],["anathema","혐오 대상"],["anodyne","진통의/무해한"],["anomaly","변칙"],["antipathy","반감"],["antiquated","구식의"],["apex","정점"],["aplomb","침착"],["apocryphal","출처가 의심스러운"],["apogee","절정"],["apostate","배교자"],["apothegm","격언"],["apprise","알리다"],["approbation","승인"],["appurtenance","부속물"],["arcane","비밀스러운"],["archaic","고풍의"],["ardor","열정"],["arrant","완전한"],["articulate ideas","논리정연히 말하다"],["ascetic","금욕적인"],["asperity","신랄함"],["aspersion","비방"],["assiduous","근면한"],["assuage","누그러뜨리다"],["astringent","신랄한/수렴성의"],["atrophy","위축"],["attenuate","약화시키다"],["audacity","대담함"],["augury","전조"],["august","위엄 있는"],["auspicious","길조의"],["austerity","긴축"],["avarice","탐욕"],["aver","단언하다"],["aversion","혐오"],["avid","열렬한"],["banal","진부한"],["bane","골칫거리"],["bastion","보루"],["beget","낳다"],["belie","거짓임을 보여주다"],["belligerent","호전적인"],["bemoan","한탄하다"],["benighted","무지한"],["bequeath","물려주다"],["beseech","간청하다"],["bifurcate","둘로 나뉘다"],["blandishment","감언"],["blasphemy","신성모독"],["blithe","태평한"],["bombastic","과장된"],["boon","혜택"],["boorish","무례한"],["bountiful","풍부한"],["bravado","허세"],["broach","(화제를) 꺼내다"],["bucolic","전원의"],["burgeon","급성장하다"],["burnish","윤을 내다"],["cacophony","불협화음"],["cajole","구슬리다"],["callous","냉담한"],["calumny","중상"],["camaraderie","동료애"],["candor","솔직함"],["cantankerous","다투기 좋아하는"],["capitulate","항복하다"],["capricious","변덕스러운"],["castigate","혹평하다"],["cataclysm","대변동"],["catalyst","촉매"],["caustic","신랄한"],["censorious","비판적인"],["chagrin","원통함"],["charlatan","사기꾼"],["chastise","벌하다"],["chicanery","속임수"],["churlish","무뚝뚝한"],["circuitous","우회하는"],["circumlocution","완곡한 표현"],["circumscribe","제한하다"],["circumspect","신중한"],["clairvoyant","예지력 있는"],["clandestine","은밀한"],["cleave","쪼개다"],["clemency","관대함"],["coalesce","합쳐지다"],["cogent","설득력 있는"],["cognizant","인식하는"],["commensurate","상응하는"],["compendium","개요"],["complaisant","고분고분한"],["compunction","양심의 가책"],["conciliatory","회유적인"],["concomitant","수반되는"],["condescend","겸손한 체하다"],["conflagration","큰불"],["congruent","일치하는"],["connive","묵인하다"],["connoisseur","감정가"],["consign","맡기다"],["consternation","경악"],["construe","해석하다"],["consummate","완벽한"],["contentious","논쟁적인"],["contrite","뉘우치는"],["contumacious","반항적인"],["conundrum (riddle)","수수께끼"],["convivial","유쾌한"],["copious notes","방대한"],["coquette","요염한 여자"],["cordon","비상선"],["cornucopia","풍요"],["corpulent","비대한"],["cosmopolitan","국제적인"],["covetous","탐내는"],["cozen","속이다"],["craven","겁 많은"],["credence","신빙성"],["crestfallen","낙담한"],["culpable","비난받을 만한"],["cupidity","탐욕"],["cursory","대충의"],["curmudgeon","심술쟁이"],["dearth","부족"],["debacle","대실패"],["debase","격하시키다"],["debauchery","방탕"],["decorous","예의 바른"],["decry publicly","공공연히 비난하다"],["defamation","명예훼손"],["deference","경의"],["defunct","소멸한"],["deleterious","해로운"],["delineate clearly","명확히 기술하다"],["demagogue","선동가"],["demur","이의를 제기하다"],["denigrate","폄하하다"],["denizen","거주자"],["depravity","타락"],["deprecatory","비난하는"],["derision","조롱"],["derivative","모방의"],["desecrate","모독하다"],["desiccate","건조시키다"],["desultory","두서없는"],["diaphanous","투명한"],["diatribe","통렬한 비난"],["dichotomy","이분법"],["diffidence","자신 없음"],["dilatory","꾸물거리는"],["dirge","애가"],["disabuse","오해를 풀어주다"],["disaffected","불만을 품은"],["discomfit","당황하게 하다"],["disconsolate","비탄에 잠긴"],["discordant","불협화의"],["discursive","산만한"],["disabuse of","바로잡아주다"],["disingenuous","솔직하지 못한"],["disparate","이질적인"],["dispassion","냉정"],["disputatious","논쟁적인"],["disquiet","불안"],["dissemble","속이다"],["dissipate","낭비하다"],["dissonance","불협화"],["distend","팽창시키다"],["dither","우왕좌왕하다"],["diurnal","주행성의"],["divest","박탈하다"],["divulge secret","비밀을 누설하다"],["doctrinaire","교조적인"],["dogmatic","독단적인"],["doleful","서글픈"],["dormancy","휴면"],["dour","음침한"],["dregs","찌꺼기"],["droll","익살맞은"],["dulcet","감미로운"],["duplicitous","표리부동한"],["ebullient","패기 넘치는"],["eclectic","절충적인"],["edify","교화하다"],["effervescence","활기"],["effigy","모형상"],["effrontery","뻔뻔함"],["egregious","지독한"],["elegy","비가"],["elicit response","반응을 끌어내다"],["eloquent speech","유창한 연설"],["embezzle","횡령하다"],["emend","교정하다"],["eminence","명성"],["emollient","진정시키는"],["empirical data","경험적 자료"],["encomium","찬사"],["endemic","고유의"],["enervating","무기력하게 하는"],["enfranchise","참정권을 주다"],["engender","낳다"],["enmesh","얽어매다"],["ennui","권태"],["enervate fully","지치게 하다"],["ephemerality","덧없음"],["epicure","미식가"],["epigram","경구"],["equanimity","평정"],["equivocal","모호한"],["fortuitous","우연한"],["garrulous","수다스러운"],["gregarious","사교적인"],["hackneyed","진부한"],["impetuous","충동적인"],["incorrigible","구제불능의"],["insidious","교활한"],["laconic","간결한"],["magnanimous","도량이 큰"],["nebulous","흐릿한"],["obstinate","완고한"],["ostentatious","과시하는"],["pedantic","현학적인"],["perfunctory","형식적인"],["pernicious","치명적인"],["pertinacious","집요한"],["phlegmatic","침착한"],["pragmatic","실용적인"],["precocious","조숙한"],["presumptuous","주제넘은"],["pretentious","가식적인"],["prodigal","낭비하는"],["profuse","많은"],["prolific","다작의"],["propitious","길한"],["prosaic","평범한"],["puerile","유치한"],["pugnacious","싸우기 좋아하는"],["pungent","톡 쏘는"],["quaint","진기한"],["querulous","불평하는"],["quixotic","비현실적인"],["rancorous","원한에 찬"],["recalcitrant","반항하는"],["recondite","난해한"],["redolent","향기로운"],["redundant","불필요한"],["refractory","다루기 힘든"],["relentless","가차없는"],["reprehensible","비난받을 만한"],["reticent","과묵한"],["reverent","공손한"],["sagacious","현명한"],["salient","두드러진"],["sanctimonious","독실한 체하는"],["sardonic","냉소적인"],["scrupulous","양심적인"],["sedulous","근면한"],["sententious","설교조의"],["serene","고요한"],["servile","비굴한"],["solicitous","염려하는"],["somber","침울한"],["soporific","졸리게 하는"],["spurious","가짜의"],["squalid","지저분한"],["staid","차분한"],["stalwart","충실한"],["stoic","금욕적인"],["strident","귀에 거슬리는"]],[["abnegation","자기부정"],["abrogate","폐지하다"],["abstemious","절제하는"],["accretion","누적"],["acerbity","신랄함"],["acme","절정"],["acolyte","추종자"],["adumbration","암시"],["adventitious","우연의"],["aesthete","심미가"],["affray","소동"],["aggrandizement","과장"],["alacritous","민첩한"],["alembic","증류기/정화기"],["amanuensis","필경사"],["ambrosial","천상의 맛의"],["ameliorative","개선하는"],["anachronistic","시대착오적인"],["anfractuous","구불구불한"],["animadversion","혹평"],["antediluvian","아주 구식의"],["antipodal","정반대의"],["apercu","통찰적 요약"],["aphorism","격언"],["apotheosis","신격화"],["approbatory","찬성하는"],["arcanum","비밀"],["argot","은어"],["arrant knave","지독한 악당"],["asseverate","엄숙히 단언하다"],["assuasive","누그러뜨리는"],["atavism","격세유전"],["attenuation","약화"],["augural","점치는"],["auspice","후원"],["austral","남쪽의"],["autochthonous","토착의"],["avuncular","아저씨 같은"],["badinage","가벼운 농담"],["baleful","해로운"],["balkanize","분열시키다"],["banausic","실용 본위의"],["bathos","용두사미"],["beatific","더없이 행복한"],["bedizen","야하게 꾸미다"],["beleaguer","포위하다"],["bellicose","호전적인"],["benefaction","선행"],["benignant","인자한"],["bestial","짐승 같은"],["bibulous","술을 좋아하는"],["bilious","성마른"],["blandiloquent","감언의"],["bombinate","윙윙거리다"],["bowdlerize","(글을) 순화하다"],["brummagem","값싼"],["cachinnate","크게 웃다"],["cacography","악필"],["cadaverous","송장 같은"],["caliginous","어두운"],["callipygian","엉덩이가 예쁜"],["calumniate","중상하다"],["canard","헛소문"],["caparison","마구를 채우다"],["captious","트집 잡는"],["carapace","등딱지"],["casuistry","궤변"],["catafalque","관대"],["cathartic","정화의"],["cavil","트집 잡다"],["celerity","신속함"],["cenacle","소집단"],["cerebrate","숙고하다"],["chaffer","흥정하다"],["chary","조심스러운"],["chthonic","지하 세계의"],["cicatrix","흉터"],["circumvent","우회하다"],["clarion","낭랑한"],["cognoscente","전문가"],["collocate","배치하다"],["comity","예양"],["commination","위협"],["complaisance","공손함"],["comport","처신하다"],["concatenate","사슬같이 잇다"],["conflate","융합하다"],["congeries","집합"],["conspectus","개관"],["consuetude","관습"],["contumely","모욕"],["coruscate","번쩍이다"],["costive","변비의/인색한"],["coterie","동아리"],["countervail","상쇄하다"],["crepuscular","황혼의"],["cryptic","수수께끼 같은"],["cupreous","구리의"],["cynosure","주목의 대상"],["dalliance","장난/연애"],["dapper","말쑥한"],["debouch","진출하다"],["declivity","내리막"],["deflagrate","급연소하다"],["degust","음미하다"],["deliquesce","녹아 없어지다"],["demarche","외교적 조치"],["demiurge","창조자"],["demotic","민중의"],["denouement","대단원"],["deracinate","뿌리 뽑다"],["derogate","손상시키다"],["descant","장황히 논하다"],["desideratum","꼭 필요한 것"],["desuetude","폐지 상태"],["diablerie","악마적 장난"],["diaphoresis","발한"],["diffract","회절시키다"],["dilettante","호사가"],["disabused","환상을 버린"],["discalced","맨발의"],["disquisition","논고"],["dithyramb","격찬"],["divagate","주제에서 벗어나다"],["doughty","용감한"],["dragoon","강요하다"],["dulcify","달콤하게 하다"],["ebullition","비등/격발"],["echelon","계층"],["edacious","탐욕스러운"],["effable","말로 할 수 있는"],["effluvium","악취"],["effulgent","찬란한"],["egress","출구"],["eldritch","섬뜩한"],["eleemosynary","자선의"],["elegiac","애가조의"],["eluctable","피할 수 있는"],["emolument","보수"],["empyreal","천상의"],["encomiast","찬양자"],["endogenous","내생적인"],["enervation","쇠약"],["ensorcell","매혹하다"],["entelechy","완성태"],["ephphatha","열림"],["epicene","남녀 공용의"],["epigone","아류"],["epistolary","서간체의"],["equipoise","평형"],["eremite","은둔자"],["ergophobia","일 공포증"],["erstwhile","이전의"],["esculent","식용의"],["esurient","게걸스러운"],["ethereal","천상의"],["eudaemonia","행복"],["evanescent","덧없는"],["eventuate","결국 ~이 되다"],["exardescence","격렬"],["excogitate","안출하다"],["excoriate","혹평하다"],["execrable","지독한"],["exegesis","주해"],["exiguous","근소한"],["eximious","우수한"],["expatiate","상술하다"],["expiate","속죄하다"],["expostulate","충고하다"],["expunge","지우다"],["exsanguinate","피를 빼다"],["extemporize","즉흥으로 하다"],["extirpate","근절하다"],["fainéant","게으른"],["fanfaronade","허풍"],["farrago","잡동사니"],["fastuous","거만한"],["fatuous","얼빠진"],["febrile","열이 있는"],["feckless","무기력한"],["felicitous","적절한"],["feral","야생의"],["fetid","악취 나는"],["fissiparous","분열하는"],["flagitious","극악한"],["flocculent","양털 같은"],["foment","조장하다"],["forfend","막다"],["fractious","성마른"],["friable","부서지기 쉬운"],["froward","심술궂은"],["fugacious","덧없는"],["fulgent","번쩍이는"],["fuliginous","그을음의"],["fulminate","맹비난하다"],["fulsome","지나친"],["funambulist","줄타기 곡예사"],["fungible","대체 가능한"],["furtive","은밀한"],["fustian","허풍 떠는"],["gainsay","부인하다"],["galvanic","자극적인"],["gasconade","허풍"],["gelid","얼어붙은"],["germane","적절한"],["gestalt","전체상"],["gibbous","볼록한"],["glabrous","털 없는"],["gloaming","황혼"],["grandiloquent","호언장담하는"],["gregariousness","사교성"],["guerdon","보수"],["habiliment","의복"],["halcyon","평온한"],["hagiography","성인전/미화전기"],["harangue","장광설"],["hebetude","둔함"],["hegemony","패권"],["heterodox","이단의"],["hirsute","털 많은"],["histrionic","연극조의"],["hoary","백발의"],["hortatory","권고하는"],["hubris","오만"],["hyperbole","과장법"],["iconoclast","우상파괴자"],["idiosyncrasy","특이성"],["ignominious","불명예스러운"],["imbroglio","분규"],["immure","가두다"],["impecunious","무일푼의"],["imperious","거만한"],["impervious","영향받지 않는"],["impetuosity","성급함"],["implacable","달랠 수 없는"],["importune","간청하다"],["imprecation","저주"],["inchoate","초기의"],["incontrovertible","반박할 수 없는"],["inculcate","주입하다"],["inveigle","꾀어내다"],["irascible","화를 잘 내는"],["jejune","공허한"],["jettison","버리다"],["jocular","익살맞은"],["jubilant","환희에 찬"],["ken","시야/지식"],["lachrymose","눈물 잘 흘리는"],["lambent","어른거리는"],["languorous","나른한"],["lassitude","나른함"],["legerdemain","요술"],["lethargic","무기력한"],["limpid","맑은"],["lissome","나긋한"],["loquacious","말이 많은"],["lubricious","음탕한"],["lucubration","밤샘 공부"],["luminary","권위자"],["macerate","불리다"],["maladroit","서투른"],["malapropism","말의 오용"],["malinger","꾀병 부리다"],["mawkish","느끼한"],["mellifluous","감미로운"],["mendacious","거짓의"],["mendicant","거지"],["mercurial","변덕스러운"],["meretricious","야한"],["minatory","위협적인"],["miscreant","악당"],["mollify","달래다"],["morass","수렁"],["mordant","신랄한"],["moribund","빈사의"],["multifarious","다방면의"],["munificent","후한"],["nadir","최저점"],["nascent","발생기의"],["nefarious","사악한"],["neophyte","초심자"],["nettle","짜증나게 하다"],["noisome","역겨운"],["nonplus","어리둥절하게 하다"],["nugatory","하찮은"],["obdurate","완고한"],["obfuscate","혼란시키다"],["obloquy","비방"],["obsequious","아첨하는"],["obstreperous","소란한"],["obtrude","강요하다"],["obviate","제거하다"],["occlude","막다"],["odious","혐오스러운"],["officious","참견하는"],["onerous","부담스러운"],["opprobrium","오명"],["oscillate","흔들리다"],["ostensible","표면상의"],["palliate","완화하다"]]];
+const NT = WORD_TIERS.length;
+const TIER_DESC=[
+ "기초 중의 기초, 가장 자주 쓰는 쉬운 단어예요.",
+ "초등 수준의 생활 단어를 넓혀요.",
+ "초등 고학년이 알아두면 좋은 단어예요.",
+ "중학교 기초 필수 어휘예요.",
+ "중학 심화·고교 입문 어휘예요.",
+ "수능 기본기를 다지는 고교 어휘예요.",
+ "수능 고난도·변별 어휘예요.",
+ "수능을 넘어선 토플·편입 수준 어휘예요.",
+ "GRE급 최고난도 어휘예요."
 ];
-const W = BANK.map(([en,ko,level])=>({en,ko,level}));
-const byLevel = l => W.filter(w=>w.level===l);
-const findEn = en => W.find(w=>w.en===en);
-const LEVEL_NAME = {1:"기초",2:"중급",3:"고급"};
-const LEVEL_DESC = {
-  1:"일상에서 자주 쓰는 기본 단어들을 탄탄히 다지는 단계예요.",
-  2:"독해와 작문에 꼭 필요한 중급 어휘로 폭을 넓히는 단계예요.",
-  3:"시험과 원서 독해에서 변별력을 가르는 고급 어휘 단계예요."
-};
+let ALL=[]; WORD_TIERS.forEach((t,i)=>t.forEach(([en,ko])=>ALL.push({en,ko,tier:i})));
+const byTier = i => WORD_TIERS[i].map(([en,ko])=>({en,ko,tier:i}));
+const findEn = en => ALL.find(w=>w.en===en);
 const MAX_WORDS=50, DEFAULT_WORDS=10, MIN_WORDS=3;
 
-// ---------- utils ----------
 const $ = s => document.querySelector(s);
 const view = $("#view");
 const esc = s => String(s==null?"":s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
 const sample = (arr,n) => shuffle(arr).slice(0,n);
 function distractors(word,n){
-  const pool=shuffle(W.filter(w=>w.ko!==word.ko));
-  const same=pool.filter(w=>w.level===word.level);
+  const pool=shuffle(ALL.filter(w=>w.ko!==word.ko));
+  const same=pool.filter(w=>w.tier===word.tier);
   const picks=[...same,...pool].filter((w,i,s)=>s.findIndex(x=>x.ko===w.ko)===i);
   const out=[],seen=new Set([word.ko]);
   for(const w of picks){ if(out.length>=n) break; if(!seen.has(w.ko)){seen.add(w.ko);out.push(w.ko);} }
+  while(out.length<n) out.push("—");
   return out;
 }
 const KEYS=["A","B","C","D"];
 function fmtDate(ts){ const d=new Date(ts),p=x=>String(x).padStart(2,"0"); return `${d.getMonth()+1}/${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}`; }
 
-// ---------- state ----------
-let state = { level:null, count:DEFAULT_WORDS, assigned:[], test:[], answers:[], qIndex:0, diagnosis:null };
+let state = { tier:null, count:DEFAULT_WORDS, assigned:[], test:[], answers:[], qIndex:0, diagnosis:null };
 
-// ---------- auth + storage (cloud db, localStorage fallback, hashed passwords) ----------
+// ---- auth + storage (cloud db, localStorage fallback, hashed pw) ----
 const LS_DB="vocab_users_v1", LS_SESSION="vocab_session_v1";
 let auth={ user:null, data:null };
-let cloud=null; // db namespace when online, else null
+let cloud=null;
 async function initCloud(){
   try{
     if(window.claude && typeof claude.use==="function"){
@@ -295,11 +257,7 @@ async function getAccount(u){
   if(cloud){
     try{
       const snap=await cloud.doc("accounts/"+u).get();
-      if(snap){
-        if(snap.exists===false) return null;
-        if(typeof snap.data==="function") return snap.data();
-        if(snap.data) return snap.data;
-      }
+      if(snap){ if(snap.exists===false) return null; if(typeof snap.data==="function") return snap.data(); if(snap.data) return snap.data; }
       return null;
     }catch(e){ return null; }
   }
@@ -313,46 +271,24 @@ async function saveCurrent(){ if(!auth.user||!auth.data) return false; return aw
 function randSalt(){ return Math.random().toString(36).slice(2)+Date.now().toString(36); }
 async function hashPw(pw,salt){
   const msg=salt+"::"+pw;
-  try{
-    const buf=await crypto.subtle.digest("SHA-256", new TextEncoder().encode(msg));
-    return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
-  }catch(e){
-    let h=5381; for(let i=0;i<msg.length;i++){ h=((h<<5)+h+msg.charCodeAt(i))>>>0; }
-    return "f"+h.toString(16);
-  }
+  try{ const buf=await crypto.subtle.digest("SHA-256", new TextEncoder().encode(msg)); return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join(""); }
+  catch(e){ let h=5381; for(let i=0;i<msg.length;i++){ h=((h<<5)+h+msg.charCodeAt(i))>>>0; } return "f"+h.toString(16); }
 }
 function acc(){ return auth.user ? auth.data : null; }
 function logout(){ auth.user=null; auth.data=null; try{localStorage.removeItem(LS_SESSION);}catch(e){} renderAccountUI(); screenAuth(); }
-
 function renderAccountUI(){
   const el=$("#acct"); if(!el) return;
   const dot=el.querySelector(".adot"), name=el.querySelector(".aname");
-  if(auth.user){
-    const a=acc();
-    dot.className="adot on";
-    name.textContent=(a&&a.nickname)?a.nickname:auth.user;
-    el.title="내 학습 기록 보기";
-    el.onclick=screenRecords;
-  }else{
-    dot.className="adot";
-    name.textContent="로그인";
-    el.title="로그인 / 회원가입";
-    el.onclick=screenAuth;
-  }
+  if(auth.user){ const a=acc(); dot.className="adot on"; name.textContent=(a&&a.nickname)?a.nickname:auth.user; el.title="내 학습 기록 보기"; el.onclick=screenRecords; }
+  else{ dot.className="adot"; name.textContent="로그인"; el.title="로그인 / 회원가입"; el.onclick=screenAuth; }
 }
-
 function setStep(active){
-  const order=["level","setup","study","test","result"];
-  const ai=order.indexOf(active);
+  const order=["level","setup","study","test","result"]; const ai=order.indexOf(active);
   $("#steps").classList.toggle("hide", ai<0);
-  document.querySelectorAll(".step").forEach(el=>{
-    const i=order.indexOf(el.dataset.s);
-    el.classList.toggle("active",i===ai&&ai>=0);
-    el.classList.toggle("done",ai>=0&&i<ai);
-  });
+  document.querySelectorAll(".step").forEach(el=>{ const i=order.indexOf(el.dataset.s); el.classList.toggle("active",i===ai&&ai>=0); el.classList.toggle("done",ai>=0&&i<ai); });
 }
 
-// ---------- Auth screen ----------
+// ---- Auth screen ----
 let authMode="login";
 function screenAuth(){
   setStep("");
@@ -366,100 +302,72 @@ function screenAuth(){
     <h2 class="title">${isLogin?'다시 오신 걸 환영해요':'학습 계정 만들기'}</h2>
     <p class="lede">${isLogin?'아이디와 비밀번호로 로그인하면 내 학습 기록을 이어서 볼 수 있어요.':'아이디와 비밀번호만 정하면 바로 시작할 수 있어요.'}</p>
     <form id="authForm" style="margin-top:22px" autocomplete="off">
-      <div class="inp">
-        <label for="uid">아이디</label>
-        <input id="uid" type="text" inputmode="text" autocomplete="username" placeholder="3~16자 (영문·숫자·한글)" maxlength="16">
-      </div>
-      <div class="inp">
-        <label for="pw">비밀번호</label>
-        <input id="pw" type="password" autocomplete="${isLogin?'current-password':'new-password'}" placeholder="4자 이상" maxlength="32">
-      </div>
-      ${isLogin?'':`
-      <div class="inp">
-        <label for="pw2">비밀번호 확인</label>
-        <input id="pw2" type="password" autocomplete="new-password" placeholder="비밀번호를 한 번 더" maxlength="32">
-      </div>`}
+      <div class="inp"><label for="uid">아이디</label><input id="uid" type="text" autocomplete="username" placeholder="3~16자 (영문·숫자·한글)" maxlength="16"></div>
+      <div class="inp"><label for="pw">비밀번호</label><input id="pw" type="password" autocomplete="${isLogin?'current-password':'new-password'}" placeholder="4자 이상" maxlength="32"></div>
+      ${isLogin?'':`<div class="inp"><label for="pw2">비밀번호 확인</label><input id="pw2" type="password" autocomplete="new-password" placeholder="비밀번호를 한 번 더" maxlength="32"></div>`}
       <div class="err" id="err"></div>
       <button class="btn primary block" type="submit">${isLogin?'로그인':'가입하고 시작하기'}</button>
     </form>
-    ${isLogin?'':`
-    <div class="hint warn">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
-      <span>이 로그인은 학습 기록을 구분하기 위한 <b>간단한 저장용</b>이에요. 은행·이메일 등 <b>실제로 쓰는 비밀번호는 입력하지 마세요.</b></span>
-    </div>`}
-    <div class="link-row">
-      <button class="link-btn" id="guest">로그인 없이 둘러보기</button>
-    </div>
+    ${isLogin?'':`<div class="hint warn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span>이 로그인은 학습 기록 구분용 <b>간단한 저장용</b>이에요. 은행·이메일 등 <b>실제 비밀번호는 입력하지 마세요.</b></span></div>`}
+    <div class="link-row"><button class="link-btn" id="guest">로그인 없이 둘러보기</button></div>
   </div>`;
-
   document.querySelectorAll(".auth-tabs button").forEach(b=>b.onclick=()=>{ authMode=b.dataset.m; screenAuth(); });
-  $("#guest").onclick=()=>{ auth.user=null; renderAccountUI(); state.level=null; screenLevelIntro(); };
+  $("#guest").onclick=()=>{ auth.user=null; renderAccountUI(); state.tier=null; screenLevelIntro(); };
   const err=m=>{ $("#err").textContent=m; };
   $("#authForm").onsubmit=async(e)=>{
     e.preventDefault();
-    const u=($("#uid").value||"").trim();
-    const pw=$("#pw").value||"";
+    const u=($("#uid").value||"").trim(), pw=$("#pw").value||"";
     if(!/^[\w가-힣]{3,16}$/.test(u)){ err("아이디는 3~16자의 영문·숫자·한글이어야 해요."); return; }
     if(pw.length<4){ err("비밀번호는 4자 이상이어야 해요."); return; }
     if(!isLogin){ const pw2=$("#pw2").value||""; if(pw!==pw2){ err("비밀번호가 서로 달라요."); return; } }
-    const submit=$("#authForm button[type=submit]");
-    submit.disabled=true; const label=submit.textContent; submit.textContent="처리 중…"; err("");
+    const submit=$("#authForm button[type=submit]"); submit.disabled=true; const label=submit.textContent; submit.textContent="처리 중…"; err("");
     const fail=m=>{ err(m); submit.disabled=false; submit.textContent=label; };
     if(isLogin){
-      const a=await getAccount(u);
-      if(!a){ fail("존재하지 않는 아이디예요."); return; }
-      const h=await hashPw(pw,a.salt);
-      if(h!==a.pw){ fail("비밀번호가 올바르지 않아요."); return; }
+      const a=await getAccount(u); if(!a){ fail("존재하지 않는 아이디예요."); return; }
+      const h=await hashPw(pw,a.salt); if(h!==a.pw){ fail("비밀번호가 올바르지 않아요."); return; }
       auth.user=u; auth.data=a;
     }else{
-      const exists=await getAccount(u);
-      if(exists){ fail("이미 사용 중인 아이디예요."); return; }
-      const salt=randSalt(), h=await hashPw(pw,salt);
-      const a={ pw:h, salt, nickname:"", sessions:[], createdAt:Date.now() };
-      const ok=await putAccount(u,a);
-      if(!ok){ fail("저장소에 연결할 수 없어요. 잠시 후 다시 시도해 주세요."); return; }
+      const exists=await getAccount(u); if(exists){ fail("이미 사용 중인 아이디예요."); return; }
+      const salt=randSalt(), h=await hashPw(pw,salt); const a={ pw:h, salt, nickname:"", sessions:[], createdAt:Date.now() };
+      const ok=await putAccount(u,a); if(!ok){ fail("저장소에 연결할 수 없어요. 잠시 후 다시 시도해 주세요."); return; }
       auth.user=u; auth.data=a;
     }
     try{ localStorage.setItem(LS_SESSION, u); }catch(e){}
-    renderAccountUI();
-    state.level=null; state.diagnosis=null;
-    screenLevelIntro();
+    renderAccountUI(); state.tier=null; state.diagnosis=null; screenLevelIntro();
   };
   setTimeout(()=>{ const el=$("#uid"); if(el) el.focus(); },50);
 }
 
-// ---------- 1. Level diagnosis ----------
+// ---- 1. Diagnosis (9 tiers) ----
 let diag=null;
 function screenLevelIntro(){
   setStep("level");
-  const hello = auth.user ? `<p class="lede">${esc((acc()&&acc().nickname)||auth.user)}님, 오늘도 시작해 볼까요? 짧은 진단으로 오늘의 단어를 맞춰 드릴게요.</p>` :
-    `<p class="lede">아주 짧은 진단 퀴즈로 지금 실력을 가늠해 볼게요. 9문제, 약 1분이면 충분해요. 결과에 맞춰 암기할 단어를 골라 드려요.</p>`;
+  const hello = auth.user ? `<p class="lede">${esc((acc()&&acc().nickname)||auth.user)}님, 오늘도 시작해 볼까요? 짧은 진단으로 딱 맞는 단계를 찾아 드려요.</p>` :
+    `<p class="lede">짧은 진단 퀴즈(9문제)로 지금 실력을 가늠해 볼게요. 초등 기초부터 최상급까지 9단계 중 나에게 맞는 단계를 골라 드려요.</p>`;
   view.innerHTML=`
   <div class="card fade">
     <div class="eyebrow">STEP 1 · 레벨 진단</div>
-    <h1 class="hero">나에게 맞는 단어부터<br>시작해요</h1>
+    <h1 class="hero">나에게 맞는 단계부터<br>시작해요</h1>
     ${hello}
-    <div class="hint">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-      <span>모르는 단어는 과감히 찍어도 괜찮아요. 모르는 만큼이 바로 배울 거리예요.</span>
-    </div>
+    <div class="hint"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span>모르는 단어는 과감히 찍어도 괜찮아요. 모르는 만큼이 바로 배울 거리예요.</span></div>
     <div class="actions">
-      <button class="btn primary" id="go">진단 시작하기
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      <button class="btn primary" id="go">진단 시작하기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       ${auth.user?`<button class="btn ghost" id="rec">내 기록 보기</button>`:`<button class="btn ghost" id="login">로그인</button>`}
+      <button class="btn ghost" id="pick">단계 직접 고르기</button>
     </div>
   </div>`;
   $("#go").onclick=startDiag;
   if(auth.user) $("#rec").onclick=screenRecords; else $("#login").onclick=screenAuth;
+  $("#pick").onclick=()=>{ state.tier=state.tier==null?0:state.tier; screenSetup(); };
 }
 function startDiag(){
-  const qs=[]; [1,2,3].forEach(l=>{ sample(byLevel(l),3).forEach(w=>qs.push(w)); });
-  diag={qs:shuffle(qs),i:0,correctByLevel:{1:0,2:0,3:0}};
+  const qs=[]; for(let i=0;i<NT;i++){ const pool=byTier(i); qs.push(pool[Math.floor(Math.random()*pool.length)]); }
+  diag={qs, i:0, correct:new Array(NT).fill(false)};
   renderDiagQ();
 }
 function renderDiagQ(){
   setStep("level");
-  const w=diag.qs[diag.i],opts=shuffle([w.ko,...distractors(w,3)]),total=diag.qs.length;
+  const w=diag.qs[diag.i], opts=shuffle([w.ko,...distractors(w,3)]), total=diag.qs.length;
   view.innerHTML=`
   <div class="card fade">
     <div class="qmeta"><span>레벨 진단</span><span>${diag.i+1} / ${total}</span></div>
@@ -469,125 +377,79 @@ function renderDiagQ(){
     <div class="opts" id="opts"></div>
   </div>`;
   const box=$("#opts");
-  opts.forEach((o,i)=>{
-    const b=document.createElement("button");
-    b.className="opt"; b.innerHTML=`<span class="key">${KEYS[i]}</span><span>${esc(o)}</span>`;
-    b.onclick=()=>{ if(o===w.ko) diag.correctByLevel[w.level]++; diag.i++; (diag.i>=total)?finishDiag():renderDiagQ(); };
-    box.appendChild(b);
-  });
+  opts.forEach((o,i)=>{ const b=document.createElement("button"); b.className="opt"; b.innerHTML=`<span class="key">${KEYS[i]}</span><span>${esc(o)}</span>`;
+    b.onclick=()=>{ if(o===w.ko) diag.correct[w.tier]=true; diag.i++; (diag.i>=total)?finishDiag():renderDiagQ(); }; box.appendChild(b); });
 }
 function finishDiag(){
-  const c=diag.correctByLevel; let level=1;
-  if(c[3]>=2) level=3; else if(c[2]>=2) level=2; else level=1;
-  state.level=level; state.diagnosis={...c,totalCorrect:c[1]+c[2]+c[3]};
-  screenLevelResult();
+  let rec=0, cnt=0; for(let i=0;i<NT;i++){ if(diag.correct[i]){ rec=i; cnt++; } }
+  state.tier=rec; state.diagnosis={cnt}; screenLevelResult();
 }
 function screenLevelResult(){
   setStep("level");
-  const lv=state.level,c=state.diagnosis;
+  const ti=state.tier, c=state.diagnosis;
   view.innerHTML=`
   <div class="card fade">
     <div class="eyebrow">진단 완료</div>
-    <h2 class="title">추천 레벨은 <span style="color:var(--green-deep)">${LEVEL_NAME[lv]}</span> 입니다</h2>
-    <p class="lede">${LEVEL_DESC[lv]}</p>
+    <h2 class="title">추천 단계는 <span style="color:var(--green-deep)">${esc(TIER_META[ti].name)}</span></h2>
+    <p class="lede">${TIER_DESC[ti]}</p>
     <div class="stat-row">
-      <div class="stat ok"><b>${c.totalCorrect}<span style="font-size:15px;color:var(--faint)"> / 9</span></b><span>진단 정답</span></div>
-      <div class="stat"><b>${LEVEL_NAME[lv]}</b><span>추천 단계</span></div>
+      <div class="stat ok"><b>${c.cnt}<span style="font-size:15px;color:var(--faint)"> / 9</span></b><span>진단 정답</span></div>
+      <div class="stat"><b>${esc(TIER_META[ti].name)}</b><span>추천 단계</span></div>
     </div>
-    <div class="hint">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-      <span>레벨은 다음 단계에서 직접 바꿀 수도 있어요.</span>
-    </div>
-    <div class="actions">
-      <button class="btn primary" id="next">분량 설정하기
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-    </div>
+    <div class="hint"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>단계는 다음 화면에서 직접 바꿀 수 있어요.</span></div>
+    <div class="actions"><button class="btn primary" id="next">분량 설정하기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
   </div>`;
   $("#next").onclick=screenSetup;
 }
 
-// ---------- 2. Setup ----------
+// ---- 2. Setup ----
 function screenSetup(){
   setStep("setup");
-  if(!state.level) state.level=1;
-  const lv=state.level, maxForLevel=Math.min(MAX_WORDS, byLevel(lv).length);
-  if(state.count>maxForLevel) state.count=maxForLevel;
+  if(state.tier==null) state.tier=0;
+  const maxForTier=Math.min(MAX_WORDS, byTier(state.tier).length);
+  if(state.count>maxForTier) state.count=maxForTier;
   if(state.count<MIN_WORDS) state.count=MIN_WORDS;
   view.innerHTML=`
   <div class="card fade">
     <div class="eyebrow">STEP 2 · 분량 설정</div>
-    <h2 class="title">오늘 몇 단어 외워 볼까요?</h2>
-    <p class="lede">무리하지 않는 선에서 정해요. 먼저 단어를 충분히 보고 외운 뒤, 따로 시험을 봅니다. 최대 ${MAX_WORDS}개까지 가능해요.</p>
-    <div class="field">
-      <label>학습 레벨</label>
-      <div class="opts" style="grid-template-columns:repeat(3,1fr);display:grid;gap:10px" id="lvls"></div>
-    </div>
+    <h2 class="title">단계와 분량을 정해요</h2>
+    <p class="lede">각 단계마다 300단어가 준비돼 있어요. 한 번에 외울 양만 고르면, 그 단계에서 무작위로 뽑아 드려요. (한 번에 최대 ${MAX_WORDS}개)</p>
+    <div class="field"><label>학습 단계</label><div class="tier-grid" id="tiers"></div></div>
     <div class="field">
       <label>단어 개수 <span style="color:var(--faint);font-weight:500">· 권장 ${DEFAULT_WORDS}개</span></label>
-      <div class="stepper">
-        <button id="minus" aria-label="줄이기">−</button>
-        <div><div class="count-val" id="countVal">${state.count}</div><div class="count-unit">단어</div></div>
-        <button id="plus" aria-label="늘리기">+</button>
-      </div>
-      <input type="range" id="rng" min="${MIN_WORDS}" max="${maxForLevel}" value="${state.count}">
-      <div class="rng-scale"><span>${MIN_WORDS}</span><span>${maxForLevel}</span></div>
+      <div class="stepper"><button id="minus" aria-label="줄이기">−</button><div><div class="count-val" id="countVal">${state.count}</div><div class="count-unit">단어</div></div><button id="plus" aria-label="늘리기">+</button></div>
+      <input type="range" id="rng" min="${MIN_WORDS}" max="${maxForTier}" value="${state.count}">
+      <div class="rng-scale"><span>${MIN_WORDS}</span><span>${maxForTier}</span></div>
     </div>
-    <div class="actions">
-      <button class="btn ghost" id="back">레벨 다시 진단</button>
-      <button class="btn primary" id="start">암기 시작하기
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-    </div>
+    <div class="actions"><button class="btn ghost" id="back">레벨 다시 진단</button><button class="btn primary" id="start">암기 시작하기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
   </div>`;
-  const lvls=$("#lvls");
-  [1,2,3].forEach(l=>{
-    const b=document.createElement("button");
-    b.className="opt"+(l===state.level?" correct":"");
-    b.style.cssText="justify-content:center;flex-direction:column;gap:3px;text-align:center";
-    b.innerHTML=`<span style="font-weight:700">${LEVEL_NAME[l]}</span><span style="font-size:11.5px;color:var(--faint)">Lv.${l}</span>`;
-    b.onclick=()=>{ state.level=l; screenSetup(); };
-    lvls.appendChild(b);
-  });
+  const tg=$("#tiers");
+  TIER_META.forEach((m,i)=>{ const b=document.createElement("button"); b.className="tier-btn"+(i===state.tier?" on":""); b.innerHTML=`<b>${esc(m.name)}</b><span>Lv.${i+1}</span>`; b.onclick=()=>{ state.tier=i; screenSetup(); }; tg.appendChild(b); });
   const cv=$("#countVal"),rng=$("#rng");
-  const sync=v=>{ v=Math.max(MIN_WORDS,Math.min(maxForLevel,v)); state.count=v; cv.textContent=v; rng.value=v; };
-  $("#minus").onclick=()=>sync(state.count-1);
-  $("#plus").onclick=()=>sync(state.count+1);
-  rng.oninput=()=>sync(+rng.value);
+  const sync=v=>{ v=Math.max(MIN_WORDS,Math.min(maxForTier,v)); state.count=v; cv.textContent=v; rng.value=v; };
+  $("#minus").onclick=()=>sync(state.count-1); $("#plus").onclick=()=>sync(state.count+1); rng.oninput=()=>sync(+rng.value);
   $("#back").onclick=screenLevelIntro;
-  $("#start").onclick=()=>{ state.assigned=sample(byLevel(state.level),state.count); screenStudy(); };
+  $("#start").onclick=()=>{ state.assigned=sample(byTier(state.tier),state.count); screenStudy(); };
 }
 
-// ---------- 3. Study ----------
+// ---- 3. Study ----
 function screenStudy(){
   setStep("study");
-  const rows=state.assigned.map((w,i)=>`
-    <div class="wordrow"><span class="idx">${String(i+1).padStart(2,'0')}</span><span class="en">${esc(w.en)}</span><span class="ko">${esc(w.ko)}</span></div>`).join("");
+  const rows=state.assigned.map((w,i)=>`<div class="wordrow"><span class="idx">${String(i+1).padStart(2,'0')}</span><span class="en">${esc(w.en)}</span><span class="ko">${esc(w.ko)}</span></div>`).join("");
   view.innerHTML=`
   <div class="card fade">
-    <div class="study-head">
-      <div><div class="eyebrow">STEP 3 · 암기</div><h2 class="title">먼저 눈에 익혀요</h2></div>
-      <span class="chip">${LEVEL_NAME[state.level]} · ${state.assigned.length}단어</span>
-    </div>
-    <p class="lede">아래 단어와 뜻을 천천히 읽어 보세요. 준비가 되면 시험으로 넘어갑니다. 시험에서는 뜻이 숨겨져요.</p>
+    <div class="study-head"><div><div class="eyebrow">STEP 3 · 암기</div><h2 class="title">먼저 눈에 익혀요</h2></div><span class="chip">${esc(TIER_META[state.tier].name)} · ${state.assigned.length}단어</span></div>
+    <p class="lede">아래 단어와 뜻을 천천히 읽어 보세요. 준비되면 시험으로 넘어갑니다. 시험에서는 뜻이 숨겨져요.</p>
     <div class="wordlist">${rows}</div>
-    <div class="hint">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
-      <span>소리 내어 읽으면 더 잘 외워져요. 전부 외울 필요는 없어요 — 시험이 약점을 짚어 줄 거예요.</span>
-    </div>
-    <div class="actions">
-      <button class="btn ghost" id="re">단어 다시 뽑기</button>
-      <button class="btn primary" id="toTest">시험 보러 가기
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-    </div>
+    <div class="hint"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span>소리 내어 읽으면 더 잘 외워져요. 전부 외울 필요는 없어요 — 시험이 약점을 짚어 줄 거예요.</span></div>
+    <div class="actions"><button class="btn ghost" id="re">단어 다시 뽑기</button><button class="btn primary" id="toTest">시험 보러 가기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
   </div>`;
-  $("#re").onclick=()=>{ state.assigned=sample(byLevel(state.level),state.count); screenStudy(); };
+  $("#re").onclick=()=>{ state.assigned=sample(byTier(state.tier),state.count); screenStudy(); };
   $("#toTest").onclick=startTest;
 }
 
-// ---------- 4. Test ----------
-function startTest(){
-  state.test=shuffle(state.assigned).map(w=>({word:w,options:shuffle([w.ko,...distractors(w,3)])}));
-  state.answers=[]; state.qIndex=0; renderTestQ();
-}
+// ---- 4. Test ----
+function startTest(){ state.test=shuffle(state.assigned).map(w=>({word:w,options:shuffle([w.ko,...distractors(w,3)])})); state.answers=[]; state.qIndex=0; renderTestQ(); }
 function renderTestQ(){
   setStep("test");
   const i=state.qIndex,total=state.test.length,item=state.test[i],w=item.word;
@@ -600,26 +462,15 @@ function renderTestQ(){
     <div class="opts" id="opts"></div>
   </div>`;
   const box=$("#opts");
-  item.options.forEach((o,k)=>{
-    const b=document.createElement("button");
-    b.className="opt"; b.innerHTML=`<span class="key">${KEYS[k]}</span><span>${esc(o)}</span>`;
-    b.onclick=()=>pick(b,o); box.appendChild(b);
-  });
+  item.options.forEach((o,k)=>{ const b=document.createElement("button"); b.className="opt"; b.innerHTML=`<span class="key">${KEYS[k]}</span><span>${esc(o)}</span>`; b.onclick=()=>pick(b,o); box.appendChild(b); });
   function pick(btn,chosen){
-    const correct=chosen===w.ko;
-    state.answers.push({word:w,chosen,correct});
-    box.querySelectorAll(".opt").forEach(el=>{
-      el.classList.add("disabled");
-      const label=el.querySelector("span:last-child").textContent;
-      if(label===w.ko) el.classList.add("correct");
-      else if(el===btn) el.classList.add("wrong");
-      else el.classList.add("dim");
-    });
+    const correct=chosen===w.ko; state.answers.push({word:w,chosen,correct});
+    box.querySelectorAll(".opt").forEach(el=>{ el.classList.add("disabled"); const label=el.querySelector("span:last-child").textContent; if(label===w.ko) el.classList.add("correct"); else if(el===btn) el.classList.add("wrong"); else el.classList.add("dim"); });
     setTimeout(()=>{ state.qIndex++; (state.qIndex>=total)?screenResult():renderTestQ(); }, correct?560:1000);
   }
 }
 
-// ---------- 5. Result ----------
+// ---- 5. Result ----
 function screenResult(){
   setStep("result");
   const ans=state.answers,total=ans.length;
@@ -631,81 +482,41 @@ function screenResult(){
   else if(pct>=60){verdict="잘하고 있어요";note="절반 이상 맞혔어요. 틀린 단어를 복습해 볼까요?";}
   else if(pct>=40){verdict="조금 더 힘내요";note="아직 낯선 단어가 많네요. 암기부터 다시 다져요.";}
   else {verdict="처음이 어렵죠";note="천천히 다시 외워 보면 금방 익숙해질 거예요.";}
-
   let savedLine="";
   if(auth.user){
     const a=acc()||{sessions:[]};
-    a.sessions=(a.sessions||[]).concat([{ ts:Date.now(),level:state.level,total,correct:correct.length,pct,
-      wrong:wrong.map(x=>({en:x.word.en,ko:x.word.ko})), right:correct.map(x=>({en:x.word.en,ko:x.word.ko})) }]).slice(-80);
+    a.sessions=(a.sessions||[]).concat([{ ts:Date.now(),tier:state.tier,total,correct:correct.length,pct, wrong:wrong.map(x=>({en:x.word.en,ko:x.word.ko})), right:correct.map(x=>({en:x.word.en,ko:x.word.ko})) }]).slice(-120);
     auth.data=a;
-    saveCurrent().then(ok=>{
-      const t=$("#saveLine"); if(!t) return;
-      t.className="saved-tag"+(ok?"":" muted");
-      t.innerHTML = ok
-        ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> ${esc(auth.user)} 계정에 저장했어요${isOnline()?' (온라인)':''}`
-        : `저장에 실패했어요. 잠시 후 다시 시도해 주세요.`;
-    });
+    saveCurrent().then(ok=>{ const t=$("#saveLine"); if(!t) return; t.className="saved-tag"+(ok?"":" muted"); t.innerHTML = ok?`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> ${esc(auth.user)} 계정에 저장했어요${isOnline()?' (온라인)':''}`:`저장에 실패했어요. 잠시 후 다시 시도해 주세요.`; });
     savedLine=`<div class="saved-tag muted" id="saveLine">저장 중…</div>`;
-  }else{
-    savedLine=`<div class="saved-tag muted">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-      로그인하면 이 결과가 내 계정에 저장돼요</div>`;
-  }
-
+  }else{ savedLine=`<div class="saved-tag muted" id="saveLine"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg> 로그인하면 이 결과가 저장돼요</div>`; }
   const C=2*Math.PI*74,off=C*(1-pct/100);
-  const okRows=correct.map(a=>`
-    <div class="res-row"><span class="mark g"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="en">${esc(a.word.en)}</span><span class="ko">${esc(a.word.ko)}</span></div>`).join("")||`<p class="empty-note">맞힌 단어가 아직 없어요.</p>`;
-  const noRows=wrong.map(a=>`
-    <div class="res-row"><span class="mark r"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span><span class="en">${esc(a.word.en)}</span><span class="ko">${esc(a.word.ko)}<span class="picked">내 선택: ${esc(a.chosen)}</span></span></div>`).join("")||`<p class="empty-note">틀린 단어가 없어요. 훌륭해요!</p>`;
-
+  const okRows=correct.map(a=>`<div class="res-row"><span class="mark g"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span class="en">${esc(a.word.en)}</span><span class="ko">${esc(a.word.ko)}</span></div>`).join("")||`<p class="empty-note">맞힌 단어가 아직 없어요.</p>`;
+  const noRows=wrong.map(a=>`<div class="res-row"><span class="mark r"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span><span class="en">${esc(a.word.en)}</span><span class="ko">${esc(a.word.ko)}<span class="picked">내 선택: ${esc(a.chosen)}</span></span></div>`).join("")||`<p class="empty-note">틀린 단어가 없어요. 훌륭해요!</p>`;
   view.innerHTML=`
   <div class="card fade">
     <div class="eyebrow">STEP 5 · 결과 분석</div>
     <div class="score-ring">
-      <div class="ring">
-        <svg width="168" height="168">
-          <circle cx="84" cy="84" r="74" fill="none" stroke="var(--surface-2)" stroke-width="13"/>
-          <circle cx="84" cy="84" r="74" fill="none" stroke="var(--green)" stroke-width="13" stroke-linecap="round" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"/>
-        </svg>
-        <div class="num"><b>${pct}<span style="font-size:20px">%</span></b><span>${correct.length} / ${total} 정답</span></div>
-      </div>
+      <div class="ring"><svg width="168" height="168"><circle cx="84" cy="84" r="74" fill="none" stroke="var(--surface-2)" stroke-width="13"/><circle cx="84" cy="84" r="74" fill="none" stroke="var(--green)" stroke-width="13" stroke-linecap="round" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"/></svg><div class="num"><b>${pct}<span style="font-size:20px">%</span></b><span>${correct.length} / ${total} 정답</span></div></div>
       <div class="verdict">${verdict}<small>${note}</small></div>
       ${savedLine}
     </div>
-    <div class="stat-row">
-      <div class="stat ok"><b>${correct.length}</b><span>맞힌 단어</span></div>
-      <div class="stat no"><b>${wrong.length}</b><span>틀린 단어</span></div>
-    </div>
-    <div class="analysis">
-      <h3><span class="d r"></span>다시 볼 단어 (${wrong.length})</h3>${noRows}
-      <h3><span class="d g"></span>맞힌 단어 (${correct.length})</h3>${okRows}
-    </div>
-    <div class="actions">
-      ${wrong.length?`<button class="btn primary" id="retry">틀린 단어만 다시 시험</button>`:""}
-      <button class="btn ${wrong.length?'ghost':'primary'}" id="again">새 단어로 다시 하기</button>
-    </div>
-    <div class="actions" style="margin-top:11px">
-      ${auth.user?`<button class="btn ghost" id="rec2">내 기록 보기</button>`:""}
-      <button class="btn ghost" id="home">처음부터</button>
-    </div>
+    <div class="stat-row"><div class="stat ok"><b>${correct.length}</b><span>맞힌 단어</span></div><div class="stat no"><b>${wrong.length}</b><span>틀린 단어</span></div></div>
+    <div class="analysis"><h3><span class="d r"></span>다시 볼 단어 (${wrong.length})</h3>${noRows}<h3><span class="d g"></span>맞힌 단어 (${correct.length})</h3>${okRows}</div>
+    <div class="actions">${wrong.length?`<button class="btn primary" id="retry">틀린 단어만 다시 시험</button>`:""}<button class="btn ${wrong.length?'ghost':'primary'}" id="again">새 단어로 다시 하기</button></div>
+    <div class="actions" style="margin-top:11px">${auth.user?`<button class="btn ghost" id="rec2">내 기록 보기</button>`:""}<button class="btn ghost" id="home">처음부터</button></div>
   </div>`;
   if(wrong.length){ $("#retry").onclick=()=>{ state.assigned=wrong.map(a=>a.word); state.count=state.assigned.length; screenStudy(); }; }
   $("#again").onclick=screenSetup;
   if(auth.user) $("#rec2").onclick=screenRecords;
-  $("#home").onclick=()=>{ state.level=null; state.diagnosis=null; screenLevelIntro(); };
+  $("#home").onclick=()=>{ state.tier=null; state.diagnosis=null; screenLevelIntro(); };
 }
 
-// ---------- 내 기록 ----------
+// ---- 내 기록 ----
 function screenRecords(){
   setStep("");
   if(!auth.user){
-    view.innerHTML=`
-    <div class="card fade">
-      <div class="eyebrow">내 기록</div>
-      <h2 class="title">로그인이 필요해요</h2>
-      <p class="lede">아이디로 로그인하면 시험 결과·정답률·복습 단어가 내 계정에 쌓여요.</p>
-      <div class="actions"><button class="btn primary" id="go">로그인 / 회원가입</button></div>
-    </div>`;
+    view.innerHTML=`<div class="card fade"><div class="eyebrow">내 기록</div><h2 class="title">로그인이 필요해요</h2><p class="lede">아이디로 로그인하면 시험 결과·정답률·복습 단어가 내 계정에 쌓여요.</p><div class="actions"><button class="btn primary" id="go">로그인 / 회원가입</button></div></div>`;
     $("#go").onclick=screenAuth; return;
   }
   const a=acc()||{sessions:[]};
@@ -715,84 +526,42 @@ function screenRecords(){
   const wrongCount={},koOf={};
   sessions.forEach(s=>(s.wrong||[]).forEach(w=>{wrongCount[w.en]=(wrongCount[w.en]||0)+1;koOf[w.en]=w.ko;}));
   const correctEver=new Set(); sessions.forEach(s=>(s.right||[]).forEach(w=>correctEver.add(w.en)));
-  const weak=Object.keys(wrongCount).map(en=>({en,ko:koOf[en],c:wrongCount[en]})).sort((p,q)=>q.c-p.c).slice(0,12);
+  const weak=Object.keys(wrongCount).map(en=>({en,ko:koOf[en],c:wrongCount[en]})).sort((p,q)=>q.c-p.c).slice(0,15);
   const nick=a.nickname||"";
-
   const weakRows=weak.length?weak.map(w=>`<div class="wrow"><span class="en">${esc(w.en)}</span><span class="ko">${esc(w.ko)}</span><span class="cnt">${w.c}회 틀림</span></div>`).join(""):`<p class="empty-note">아직 반복해서 틀린 단어가 없어요. 좋아요!</p>`;
-  const histRows=n?sessions.slice(0,15).map(s=>`<div class="hrow"><span class="date">${fmtDate(s.ts)}</span><span class="lv">${LEVEL_NAME[s.level]||'-'} · ${s.total}단어</span><span class="pct">${s.pct}%<small> (${s.correct}/${s.total})</small></span></div>`).join(""):`<p class="empty-note">아직 시험 기록이 없어요. 첫 학습을 시작해 보세요.</p>`;
-
+  const histRows=n?sessions.slice(0,15).map(s=>`<div class="hrow"><span class="date">${fmtDate(s.ts)}</span><span class="lv">${esc((TIER_META[s.tier]||{}).name||'-')} · ${s.total}단어</span><span class="pct">${s.pct}%<small> (${s.correct}/${s.total})</small></span></div>`).join(""):`<p class="empty-note">아직 시험 기록이 없어요. 첫 학습을 시작해 보세요.</p>`;
   view.innerHTML=`
   <div class="card fade">
-    <div class="study-head">
-      <div><div class="eyebrow">내 기록</div><h2 class="title">${nick?esc(nick)+"님의 현황":esc(auth.user)+"님의 현황"}</h2></div>
-      <button class="btn ghost sm" id="logout">로그아웃</button>
-    </div>
-    <p class="lede">아이디 <b>${esc(auth.user)}</b>로 로그인되어 있어요. ${isOnline()?'기록이 <b>온라인</b>에 저장돼 다른 기기에서 로그인해도 이어서 볼 수 있어요.':'지금은 오프라인이라 이 기기(브라우저)에만 저장돼요.'}</p>
-    <div class="stat-row three">
-      <div class="stat"><b>${n}</b><span>학습 세션</span></div>
-      <div class="stat ok"><b>${avg}<span style="font-size:15px">%</span></b><span>평균 정답률</span></div>
-      <div class="stat"><b>${correctEver.size}</b><span>맞힌 단어 수</span></div>
-    </div>
-    <div class="nick">
-      <input id="nickIn" maxlength="16" placeholder="표시할 닉네임 (선택)" value="${esc(nick)}">
-      <button class="btn ghost sm" id="nickSave">저장</button>
-    </div>
-    <div class="analysis">
-      <h3><span class="d r"></span>복습이 필요한 단어 (${weak.length})</h3>${weakRows}
-      ${weak.length?`<div class="actions" style="margin-top:4px"><button class="btn primary sm" id="reviewWeak">이 단어들로 복습 시험</button></div>`:""}
-      <h3 style="margin-top:28px"><span class="d g"></span>최근 학습 기록</h3>${histRows}
-    </div>
+    <div class="study-head"><div><div class="eyebrow">내 기록</div><h2 class="title">${nick?esc(nick)+"님의 현황":esc(auth.user)+"님의 현황"}</h2></div><button class="btn ghost sm" id="logout">로그아웃</button></div>
+    <p class="lede">아이디 <b>${esc(auth.user)}</b>로 로그인되어 있어요. ${isOnline()?'기록이 <b>온라인</b>에 저장돼 다른 기기에서 로그인해도 이어서 볼 수 있어요.':'지금은 이 기기(브라우저)에 저장돼요.'}</p>
+    <div class="stat-row three"><div class="stat"><b>${n}</b><span>학습 세션</span></div><div class="stat ok"><b>${avg}<span style="font-size:15px">%</span></b><span>평균 정답률</span></div><div class="stat"><b>${correctEver.size}</b><span>맞힌 단어 수</span></div></div>
+    <div class="nick"><input id="nickIn" maxlength="16" placeholder="표시할 닉네임 (선택)" value="${esc(nick)}"><button class="btn ghost sm" id="nickSave">저장</button></div>
+    <div class="analysis"><h3><span class="d r"></span>복습이 필요한 단어 (${weak.length})</h3>${weakRows}${weak.length?`<div class="actions" style="margin-top:4px"><button class="btn primary sm" id="reviewWeak">이 단어들로 복습 시험</button></div>`:""}<h3 style="margin-top:28px"><span class="d g"></span>최근 학습 기록</h3>${histRows}</div>
     <div class="actions"><button class="btn primary" id="learn">새 학습 시작하기</button></div>
     <div class="actions" style="margin-top:11px"><button class="btn danger sm" id="clear">기록 전체 삭제</button></div>
   </div>`;
-
   $("#logout").onclick=logout;
-  $("#nickSave").onclick=async()=>{
-    const a2=acc()||{sessions:[]}; a2.nickname=($("#nickIn").value||"").trim().slice(0,16); auth.data=a2;
-    const b=$("#nickSave"); b.disabled=true; b.textContent="저장 중…";
-    const ok=await saveCurrent(); renderAccountUI();
-    b.disabled=false; b.textContent=ok?"저장됨 ✓":"실패"; setTimeout(()=>{ if($("#nickSave"))$("#nickSave").textContent="저장"; },1400);
-  };
-  if(weak.length){
-    $("#reviewWeak").onclick=()=>{
-      const words=weak.map(w=>findEn(w.en)).filter(Boolean);
-      if(!words.length) return;
-      state.assigned=words; state.count=words.length; state.level=state.level||words[0].level;
-      screenStudy();
-    };
-  }
-  $("#learn").onclick=()=>{ state.level=null; state.diagnosis=null; screenLevelIntro(); };
+  $("#nickSave").onclick=async()=>{ const a2=acc()||{sessions:[]}; a2.nickname=($("#nickIn").value||"").trim().slice(0,16); auth.data=a2; const b=$("#nickSave"); b.disabled=true; b.textContent="저장 중…"; const ok=await saveCurrent(); renderAccountUI(); b.disabled=false; b.textContent=ok?"저장됨 ✓":"실패"; setTimeout(()=>{ if($("#nickSave"))$("#nickSave").textContent="저장"; },1400); };
+  if(weak.length){ $("#reviewWeak").onclick=()=>{ const words=weak.map(w=>findEn(w.en)).filter(Boolean); if(!words.length) return; state.assigned=words; state.count=words.length; if(state.tier==null) state.tier=words[0].tier; screenStudy(); }; }
+  $("#learn").onclick=()=>{ state.tier=null; state.diagnosis=null; screenLevelIntro(); };
   const clr=$("#clear"); let armed=false;
-  clr.onclick=async()=>{
-    if(!armed){ armed=true; clr.textContent="한 번 더 누르면 삭제돼요"; setTimeout(()=>{armed=false; if($("#clear"))$("#clear").textContent="기록 전체 삭제";},3000); return; }
-    const a2=acc()||{}; a2.sessions=[]; auth.data=a2; await saveCurrent(); screenRecords();
-  };
+  clr.onclick=async()=>{ if(!armed){ armed=true; clr.textContent="한 번 더 누르면 삭제돼요"; setTimeout(()=>{armed=false; if($("#clear"))$("#clear").textContent="기록 전체 삭제";},3000); return; } const a2=acc()||{}; a2.sessions=[]; auth.data=a2; await saveCurrent(); screenRecords(); };
 }
 
-// ---------- theme ----------
+// ---- theme ----
 const sun='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
 const moon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
-function applyTheme(t){
-  if(t==="light"||t==="dark") document.documentElement.setAttribute("data-theme",t);
-  else document.documentElement.removeAttribute("data-theme");
-  const dark=t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches);
-  $("#themeBtn").innerHTML=dark?sun:moon;
-}
+function applyTheme(t){ if(t==="light"||t==="dark") document.documentElement.setAttribute("data-theme",t); else document.documentElement.removeAttribute("data-theme"); const dark=t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches); $("#themeBtn").innerHTML=dark?sun:moon; }
 let theme=null; try{ theme=localStorage.getItem("vocab-theme"); }catch(e){}
 applyTheme(theme);
-$("#themeBtn").onclick=()=>{
-  const cur=document.documentElement.getAttribute("data-theme");
-  const next=cur==="dark"?"light":(cur==="light"?"dark":(matchMedia("(prefers-color-scheme: dark)").matches?"light":"dark"));
-  theme=next; try{localStorage.setItem("vocab-theme",next);}catch(e){} applyTheme(next);
-};
+$("#themeBtn").onclick=()=>{ const cur=document.documentElement.getAttribute("data-theme"); const next=cur==="dark"?"light":(cur==="light"?"dark":(matchMedia("(prefers-color-scheme: dark)").matches?"light":"dark")); theme=next; try{localStorage.setItem("vocab-theme",next);}catch(e){} applyTheme(next); };
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{ if(!document.documentElement.getAttribute("data-theme")) applyTheme(null); });
+$("#brand").onclick=()=>{ state.tier=null; state.diagnosis=null; auth.user?screenLevelIntro():screenAuth(); };
 
-$("#brand").onclick=()=>{ state.level=null; state.diagnosis=null; auth.user?screenLevelIntro():screenAuth(); };
-
-// ---------- boot ----------
+// ---- boot ----
 (async function boot(){
   setStep("");
-  view.innerHTML=`<div class="card fade" style="text-align:center"><div class="eyebrow">단어 학습실</div><h2 class="title">불러오는 중…</h2><p class="lede" style="margin-left:auto;margin-right:auto">온라인 저장소에 연결하고 있어요.</p></div>`;
+  view.innerHTML=`<div class="card fade" style="text-align:center"><div class="eyebrow">단어 학습실</div><h2 class="title">불러오는 중…</h2><p class="lede" style="margin-left:auto;margin-right:auto">저장소에 연결하고 있어요.</p></div>`;
   await initCloud();
   try{ const u=localStorage.getItem(LS_SESSION); if(u){ const a=await getAccount(u); if(a){ auth.user=u; auth.data=a; } } }catch(e){}
   renderAccountUI();
