@@ -139,6 +139,23 @@ input[type=range]{width:100%;margin-top:18px;accent-color:var(--green)}
 .prog-card .top b{font-size:15px}
 .prog-card .top span{font-size:13px;color:var(--green-deep);font-weight:700}
 .prog-card .remain{font-size:12.5px;color:var(--muted);margin-top:8px}
+.menu-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:24px}
+.menu-card{display:flex;align-items:center;gap:16px;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:16px;padding:18px 20px;cursor:pointer;font-family:inherit;text-align:left;transition:.14s;width:100%}
+.menu-card:hover{border-color:var(--green);background:var(--green-soft);transform:translateY(-1px)}
+.menu-card .mi{width:46px;height:46px;border-radius:13px;background:var(--green-soft);display:grid;place-items:center;flex:none}
+.menu-card .mi svg{width:23px;height:23px;stroke:var(--green-deep)}
+.menu-card.lead .mi{background:var(--green)} .menu-card.lead .mi svg{stroke:#0e2414}
+.menu-card .mt{min-width:0;flex:1}
+.menu-card .mt b{display:block;font-size:16px;font-weight:700}
+.menu-card .mt span{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+.menu-card .mx{color:var(--faint);flex:none}
+.menu-card .mx svg{width:18px;height:18px}
+.active-banner{display:flex;align-items:center;gap:14px;background:var(--green-soft);border-radius:15px;padding:16px 18px;margin-top:20px}
+.active-banner .ab-l{min-width:0;flex:1}
+.active-banner .ab-l .lab{font-size:12px;font-weight:700;color:var(--green-deep);text-transform:uppercase;letter-spacing:.06em}
+.active-banner .ab-l .lv{font-size:19px;font-weight:800;margin-top:3px}
+.active-banner .ab-l .sm{font-size:12.5px;color:var(--muted);margin-top:3px}
+.reset-row{display:flex;justify-content:center;margin-top:14px}
 .score-ring{display:flex;flex-direction:column;align-items:center;text-align:center;padding:8px 0 4px}
 .ring{position:relative;width:168px;height:168px;margin-bottom:8px}
 .ring svg{transform:rotate(-90deg)}
@@ -262,11 +279,33 @@ function distractors(word,n){
 const KEYS=["A","B","C","D"];
 function fmtDate(ts){ const d=new Date(ts),p=x=>String(x).padStart(2,"0"); return `${d.getMonth()+1}/${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}`; }
 
-let state = { tier:null, count:DEFAULT_WORDS, assigned:[], test:[], answers:[], qIndex:0, diagnosis:null };
+let state = { tier:null, count:DEFAULT_WORDS, assigned:[], test:[], answers:[], qIndex:0, diagnosis:null, used:{}, activeTier:null };
+
+// ---- per-user progress: used words (안 겹치게) + active tier (이어서) ----
+// logged-in → account에 저장, guest → state(메모리)
+function getUsed(tier){
+  if(auth.user){ const a=acc(); return (a&&a.used&&a.used[tier])?a.used[tier]:[]; }
+  return state.used[tier]||[];
+}
+function addUsed(tier, ens){
+  let arr;
+  if(auth.user){ const a=acc(); if(!a) return; if(!a.used) a.used={}; arr=a.used[tier]||(a.used[tier]=[]); }
+  else { arr=state.used[tier]||(state.used[tier]=[]); }
+  const set=new Set(arr); ens.forEach(e=>set.add(e)); const merged=[...set];
+  if(auth.user){ acc().used[tier]=merged; } else { state.used[tier]=merged; }
+}
+function resetTier(tier){
+  if(auth.user){ const a=acc(); if(a&&a.used) a.used[tier]=[]; }
+  else { state.used[tier]=[]; }
+}
+function usedCount(tier){ return getUsed(tier).length; }
+function availForTier(tier){ const u=new Set(getUsed(tier)); return byTier(tier).filter(w=>!u.has(w.en)); }
+function getActiveTier(){ const v=auth.user?(acc()?acc().activeTier:null):state.activeTier; return (v==null?null:v); }
+function setActiveTier(t){ if(auth.user){ if(acc()) acc().activeTier=t; } else { state.activeTier=t; } }
 
 // ---- auth + storage (cloud db, localStorage fallback, hashed pw) ----
 const LS_DB="vocab_users_v1", LS_SESSION="vocab_session_v1";
-let auth={ user:null, data:null };
+let auth={ user:null, data:null, guest:false };
 let cloud=null;
 async function initCloud(){
   try{
@@ -301,7 +340,7 @@ async function hashPw(pw,salt){
   catch(e){ let h=5381; for(let i=0;i<msg.length;i++){ h=((h<<5)+h+msg.charCodeAt(i))>>>0; } return "f"+h.toString(16); }
 }
 function acc(){ return auth.user ? auth.data : null; }
-function logout(){ auth.user=null; auth.data=null; try{localStorage.removeItem(LS_SESSION);}catch(e){} renderAccountUI(); screenAuth(); }
+function logout(){ auth.user=null; auth.data=null; auth.guest=false; state.used={}; state.activeTier=null; try{localStorage.removeItem(LS_SESSION);}catch(e){} renderAccountUI(); screenAuth(); }
 function renderAccountUI(){
   const el=$("#acct"); if(!el) return;
   const dot=el.querySelector(".adot"), name=el.querySelector(".aname");
@@ -338,7 +377,7 @@ function screenAuth(){
     <div class="link-row"><button class="link-btn" id="guest">로그인 없이 둘러보기</button></div>
   </div>`;
   document.querySelectorAll(".auth-tabs button").forEach(b=>b.onclick=()=>{ authMode=b.dataset.m; screenAuth(); });
-  $("#guest").onclick=()=>{ auth.user=null; renderAccountUI(); state.tier=null; screenLevelIntro(); };
+  $("#guest").onclick=()=>{ auth.user=null; auth.guest=true; renderAccountUI(); state.tier=null; screenHome(); };
   const err=m=>{ $("#err").textContent=m; };
   $("#authForm").onsubmit=async(e)=>{
     e.preventDefault();
@@ -354,14 +393,148 @@ function screenAuth(){
       auth.user=u; auth.data=a;
     }else{
       const exists=await getAccount(u); if(exists){ fail("이미 사용 중인 아이디예요."); return; }
-      const salt=randSalt(), h=await hashPw(pw,salt); const a={ pw:h, salt, nickname:"", sessions:[], createdAt:Date.now() };
+      const salt=randSalt(), h=await hashPw(pw,salt); const a={ pw:h, salt, nickname:"", sessions:[], used:{}, activeTier:null, createdAt:Date.now() };
       const ok=await putAccount(u,a); if(!ok){ fail("저장소에 연결할 수 없어요. 잠시 후 다시 시도해 주세요."); return; }
       auth.user=u; auth.data=a;
     }
     try{ localStorage.setItem(LS_SESSION, u); }catch(e){}
-    renderAccountUI(); state.tier=null; state.diagnosis=null; screenLevelIntro();
+    auth.guest=false; renderAccountUI(); state.tier=null; state.diagnosis=null; screenHome();
   };
   setTimeout(()=>{ const el=$("#uid"); if(el) el.focus(); },50);
+}
+
+// ---- 메인 화면 (home) ----
+const IC={
+  study:'<svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+  profile:'<svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+  settings:'<svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+  chev:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>'
+};
+function screenHome(){
+  setStep("");
+  const who = auth.user ? ((acc()&&acc().nickname)||auth.user) : "게스트";
+  const at = getActiveTier();
+  let banner="";
+  if(at!=null){
+    const used=usedCount(at), rem=TIER_TOTAL(at)-used, p=Math.round(used/TIER_TOTAL(at)*100);
+    banner=`<div class="active-banner">
+      <span class="logo" style="width:40px;height:40px">${IC.study.replace('stroke-width="2.2"','stroke="#0e2414" stroke-width="2.3"')}</span>
+      <div class="ab-l"><div class="lab">이어서 공부할 단계</div><div class="lv">${esc(TIER_META[at].name)}</div><div class="sm">학습한 단어 ${used} / ${TIER_TOTAL(at)} · 남은 단어 ${rem}개</div></div>
+    </div>`;
+  }
+  view.innerHTML=`
+  <div class="card fade">
+    <div class="eyebrow">메인</div>
+    <h1 class="hero">${esc(who)}님,<br>오늘도 단어 한 입 🍃</h1>
+    <p class="lede">${at!=null?'하던 단계를 이어서 공부하거나, 기록과 설정을 확인해요.':'단어암기를 눌러 레벨을 정하고 학습을 시작해요.'}</p>
+    ${banner}
+    <div class="menu-grid">
+      <button class="menu-card lead" id="mStudy"><span class="mi">${IC.study}</span><span class="mt"><b>단어암기</b><span>${at!=null?'이어서 공부하기 · 새 단어 뽑기':'레벨 정하고 학습 시작'}</span></span><span class="mx">${IC.chev}</span></button>
+      <button class="menu-card" id="mProfile"><span class="mi">${IC.profile}</span><span class="mt"><b>${auth.user?'프로필 · 내 기록':'프로필'}</b><span>${auth.user?'학습 기록과 정답률 보기':'로그인하고 기록 저장하기'}</span></span><span class="mx">${IC.chev}</span></button>
+      <button class="menu-card" id="mSettings"><span class="mi">${IC.settings}</span><span class="mt"><b>설정</b><span>테마 · 계정 · 레벨 초기화</span></span><span class="mx">${IC.chev}</span></button>
+    </div>
+  </div>`;
+  $("#mStudy").onclick=screenStudyHub;
+  $("#mProfile").onclick=()=>{ auth.user?screenRecords():screenAuth(); };
+  $("#mSettings").onclick=screenSettings;
+}
+
+// ---- 단어암기 허브 ----
+function screenStudyHub(){
+  setStep("");
+  const at=getActiveTier();
+  if(at==null){
+    view.innerHTML=`
+    <div class="card fade">
+      <div class="eyebrow">단어암기</div>
+      <h2 class="title">먼저 내 단계를 정해요</h2>
+      <p class="lede">짧은 진단으로 추천 단계를 찾거나, 9단계 중에서 직접 골라 시작할 수 있어요. 한 번 정하면 메인에서 바로 이어서 공부할 수 있어요.</p>
+      <div class="actions">
+        <button class="btn primary" id="diag">레벨 진단하기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <button class="btn ghost" id="pick">단계 직접 고르기</button>
+      </div>
+      <div class="reset-row"><button class="link-btn" id="back">← 메인으로</button></div>
+    </div>`;
+    $("#diag").onclick=startDiag;
+    $("#pick").onclick=screenSetup;
+    $("#back").onclick=screenHome;
+    return;
+  }
+  const total=TIER_TOTAL(at), used=usedCount(at), rem=total-used, p=Math.round(used/total*100);
+  const counts=masteryCounts(), mastered=counts[at];
+  const maxForTier=Math.min(MAX_WORDS, rem);
+  if(state.count>maxForTier) state.count=Math.max(MIN_WORDS,maxForTier);
+  if(state.count<MIN_WORDS) state.count=MIN_WORDS;
+  const done = rem<=0;
+  view.innerHTML=`
+  <div class="card fade">
+    <div class="study-head"><div><div class="eyebrow">단어암기</div><h2 class="title">이어서 공부해요</h2></div><span class="chip">${esc(TIER_META[at].name)}</span></div>
+    <p class="lede">이미 외운 단어는 빼고, ${esc(TIER_META[at].name)} 단계의 <b>새 단어</b>만 뽑아 드려요.</p>
+    <div class="prog-card">
+      <div class="top"><b>학습한 단어</b><span>${used} / ${total}</span></div>
+      <div class="pbar"><i style="width:${p}%"></i></div>
+      <div class="remain">남은 새 단어 <b style="color:var(--green-deep)">${rem}개</b>${auth.user?` · 시험에서 맞힌 단어 ${mastered} / ${total}`:``}</div>
+    </div>
+    ${done?`<div class="hint warn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>이 단계의 단어를 모두 학습했어요! <b>처음부터 다시 시작하기</b>로 초기화하거나 단계를 바꿔 보세요.</span></div>`:`
+    <div class="field" style="margin-top:22px">
+      <label>한 번에 외울 단어 개수 <span style="color:var(--faint);font-weight:500">· 권장 ${DEFAULT_WORDS}개</span></label>
+      <div class="stepper"><button id="minus" aria-label="줄이기">−</button><div><div class="count-val" id="countVal">${state.count}</div><div class="count-unit">단어</div></div><button id="plus" aria-label="늘리기">+</button></div>
+      <input type="range" id="rng" min="${MIN_WORDS}" max="${maxForTier}" value="${state.count}">
+      <div class="rng-scale"><span>${MIN_WORDS}</span><span>${maxForTier}</span></div>
+    </div>`}
+    <div class="actions">
+      <button class="btn primary${done?'':''}" id="go" ${done?'disabled':''}>이어서 공부하기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      <button class="btn ghost" id="change">레벨 바꾸기</button>
+    </div>
+    <div class="reset-row"><button class="link-btn" id="reset">처음부터 다시 시작하기 (이 단계 초기화)</button></div>
+    <div class="reset-row" style="margin-top:4px"><button class="link-btn" id="back" style="color:var(--faint)">← 메인으로</button></div>
+  </div>`;
+  if(!done){
+    const cv=$("#countVal"),rng=$("#rng");
+    const sync=v=>{ v=Math.max(MIN_WORDS,Math.min(maxForTier,v)); state.count=v; cv.textContent=v; rng.value=v; };
+    $("#minus").onclick=()=>sync(state.count-1); $("#plus").onclick=()=>sync(state.count+1); rng.oninput=()=>sync(+rng.value);
+    $("#go").onclick=continueStudy;
+  }
+  $("#change").onclick=screenSetup;
+  $("#back").onclick=screenHome;
+  const rb=$("#reset"); let armed=false;
+  rb.onclick=async()=>{
+    if(!armed){ armed=true; rb.textContent="한 번 더 누르면 이 단계가 초기화돼요"; rb.style.color="var(--danger)"; setTimeout(()=>{armed=false; const e=$("#reset"); if(e){e.textContent="처음부터 다시 시작하기 (이 단계 초기화)"; e.style.color="";}},3000); return; }
+    resetTier(at); if(auth.user) await saveCurrent(); screenStudyHub();
+  };
+}
+function continueStudy(){
+  const at=getActiveTier(); if(at==null){ screenStudyHub(); return; }
+  const avail=availForTier(at);
+  if(!avail.length){ screenStudyHub(); return; }
+  state.tier=at;
+  state.assigned=sample(avail, Math.min(state.count, avail.length));
+  screenStudy();
+}
+
+// ---- 설정 ----
+function screenSettings(){
+  setStep("");
+  const curTheme=document.documentElement.getAttribute("data-theme")||"auto";
+  const tbtn=(v,label)=>`<button class="btn ${curTheme===v?'primary':'ghost'} sm" data-th="${v}">${label}</button>`;
+  const at=getActiveTier();
+  view.innerHTML=`
+  <div class="card fade">
+    <div class="eyebrow">설정</div>
+    <h2 class="title">환경 설정</h2>
+    <p class="lede">${auth.user?`아이디 <b>${esc(auth.user)}</b>로 로그인되어 있어요.`:'로그인하면 기록과 진행 상황이 저장돼요.'}</p>
+    <div class="field"><label>테마</label><div class="actions" style="margin-top:0">${tbtn("light","밝게")}${tbtn("dark","어둡게")}${tbtn("auto","시스템")}</div></div>
+    ${at!=null?`<div class="field"><label>현재 단계 (${esc(TIER_META[at].name)}) 초기화</label><p class="lede" style="margin-top:0;margin-bottom:12px">학습한 단어 기록을 지워서 이 단계의 단어가 처음부터 다시 나와요.</p><button class="btn danger sm" id="resetTier">이 단계 초기화</button></div>`:''}
+    <div class="actions">
+      ${auth.user?`<button class="btn ghost" id="logout">로그아웃</button>`:`<button class="btn primary" id="login">로그인 / 회원가입</button>`}
+    </div>
+    <div class="reset-row" style="margin-top:18px"><button class="link-btn" id="back">← 메인으로</button></div>
+  </div>`;
+  document.querySelectorAll("[data-th]").forEach(b=>b.onclick=()=>{ const v=b.dataset.th; theme=(v==="auto"?null:v); try{localStorage.setItem("vocab-theme",v==="auto"?"":v);}catch(e){} applyTheme(theme); screenSettings(); });
+  $("#back").onclick=screenHome;
+  if(auth.user) $("#logout").onclick=logout; else $("#login").onclick=screenAuth;
+  const rt=$("#resetTier");
+  if(rt){ let armed=false; rt.onclick=async()=>{ if(!armed){ armed=true; rt.textContent="한 번 더 누르면 초기화돼요"; setTimeout(()=>{armed=false; if($("#resetTier"))$("#resetTier").textContent="이 단계 초기화";},3000); return; } resetTier(at); if(auth.user) await saveCurrent(); screenSettings(); }; }
 }
 
 // ---- 1. Diagnosis (9 tiers) ----
@@ -406,9 +579,11 @@ function renderDiagQ(){
   opts.forEach((o,i)=>{ const b=document.createElement("button"); b.className="opt"; b.innerHTML=`<span class="key">${KEYS[i]}</span><span>${esc(o)}</span>`;
     b.onclick=()=>{ if(o===w.ko) diag.correct[w.tier]=true; diag.i++; (diag.i>=total)?finishDiag():renderDiagQ(); }; box.appendChild(b); });
 }
-function finishDiag(){
+async function finishDiag(){
   let rec=0, cnt=0; for(let i=0;i<NT;i++){ if(diag.correct[i]){ rec=i; cnt++; } }
-  state.tier=rec; state.diagnosis={cnt}; screenLevelResult();
+  state.tier=rec; state.diagnosis={cnt};
+  setActiveTier(rec); if(auth.user) await saveCurrent();
+  screenLevelResult();
 }
 function screenLevelResult(){
   setStep("level");
@@ -422,59 +597,44 @@ function screenLevelResult(){
       <div class="stat ok"><b>${c.cnt}<span style="font-size:15px;color:var(--faint)"> / 9</span></b><span>진단 정답</span></div>
       <div class="stat"><b>${esc(TIER_META[ti].name)}</b><span>추천 단계</span></div>
     </div>
-    <div class="hint"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>단계는 다음 화면에서 직접 바꿀 수 있어요.</span></div>
-    <div class="actions"><button class="btn primary" id="next">분량 설정하기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
+    <div class="hint"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>이 단계가 메인에 저장돼요. 언제든 단계를 직접 바꿀 수 있어요.</span></div>
+    <div class="actions"><button class="btn primary" id="next">이 단계로 공부하기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button><button class="btn ghost" id="pick">단계 직접 고르기</button></div>
   </div>`;
-  $("#next").onclick=screenSetup;
+  $("#next").onclick=screenStudyHub;
+  $("#pick").onclick=screenSetup;
 }
 
-// ---- 2. Setup ----
+// ---- 2. 단계 고르기 ----
+let pickSel=null;
 function screenSetup(){
-  setStep("setup");
-  if(state.tier==null) state.tier=0;
-  const maxForTier=Math.min(MAX_WORDS, byTier(state.tier).length);
-  if(state.count>maxForTier) state.count=maxForTier;
-  if(state.count<MIN_WORDS) state.count=MIN_WORDS;
+  setStep("");
+  const at=getActiveTier();
+  if(pickSel==null) pickSel = (at!=null?at:(state.tier!=null?state.tier:0));
   view.innerHTML=`
   <div class="card fade">
-    <div class="eyebrow">STEP 2 · 분량 설정</div>
-    <h2 class="title">단계와 분량을 정해요</h2>
-    <p class="lede">각 단계마다 300단어가 준비돼 있어요. 한 번에 외울 양만 고르면, 그 단계에서 무작위로 뽑아 드려요. (한 번에 최대 ${MAX_WORDS}개)</p>
+    <div class="eyebrow">단계 고르기</div>
+    <h2 class="title">학습할 단계를 골라요</h2>
+    <p class="lede">각 단계마다 300단어가 준비돼 있어요. 고른 단계가 메인에 저장돼서, 다음에 바로 이어서 공부할 수 있어요.</p>
     <div class="field"><label>학습 단계 <span style="color:var(--faint);font-weight:500">· 단계별 300단어</span></label><div class="tier-grid" id="tiers"></div><div id="progWrap"></div></div>
-    <div class="field">
-      <label>단어 개수 <span style="color:var(--faint);font-weight:500">· 권장 ${DEFAULT_WORDS}개</span></label>
-      <div class="stepper"><button id="minus" aria-label="줄이기">−</button><div><div class="count-val" id="countVal">${state.count}</div><div class="count-unit">단어</div></div><button id="plus" aria-label="늘리기">+</button></div>
-      <input type="range" id="rng" min="${MIN_WORDS}" max="${maxForTier}" value="${state.count}">
-      <div class="rng-scale"><span>${MIN_WORDS}</span><span>${maxForTier}</span></div>
-    </div>
-    <div class="actions"><button class="btn ghost" id="back">레벨 다시 진단</button><button class="btn primary" id="start">암기 시작하기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
+    <div class="actions"><button class="btn ghost" id="back">${at!=null?'← 단어암기로':'← 메인으로'}</button><button class="btn primary" id="start">이 단계로 공부하기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
   </div>`;
   const tg=$("#tiers");
   const counts=masteryCounts();
   TIER_META.forEach((m,i)=>{
-    const b=document.createElement("button"); b.className="tier-btn"+(i===state.tier?" on":"");
-    const p=Math.round(counts[i]/TIER_TOTAL(i)*100);
-    b.innerHTML=`<b>${esc(m.name)}</b><span class="count">${TIER_TOTAL(i)}단어</span>`+(auth.user?`<div class="pg"><i style="width:${p}%"></i></div><div class="pgt">${p}% 완료</div>`:``);
-    b.onclick=()=>{ state.tier=i; screenSetup(); }; tg.appendChild(b);
+    const b=document.createElement("button"); b.className="tier-btn"+(i===pickSel?" on":"");
+    const used=usedCount(i), p=Math.round(used/TIER_TOTAL(i)*100);
+    b.innerHTML=`<b>${esc(m.name)}</b><span class="count">${TIER_TOTAL(i)}단어</span>`+`<div class="pg"><i style="width:${p}%"></i></div><div class="pgt">학습 ${used}/${TIER_TOTAL(i)}</div>`;
+    b.onclick=()=>{ pickSel=i; screenSetup(); }; tg.appendChild(b);
   });
-  const pw=$("#progWrap"); const ti=state.tier;
-  if(auth.user){
-    const p=Math.round(counts[ti]/TIER_TOTAL(ti)*100), remain=100-p;
-    const lastTier = ti>=NT-1;
-    const nextName = lastTier?"":TIER_META[ti+1].name;
-    pw.innerHTML=`<div class="prog-card">
-      <div class="top"><b>${esc(TIER_META[ti].name)} 진척도</b><span>${p}% 완료</span></div>
-      <div class="pbar"><i style="width:${p}%"></i></div>
-      <div class="remain">${lastTier?`맞힌 단어 ${counts[ti]} / ${TIER_TOTAL(ti)} · 최고 단계예요!`:`다음 레벨(<b>${esc(nextName)}</b>)까지 <b style="color:var(--green-deep)">${remain}%</b> 남았어요 · 맞힌 단어 ${counts[ti]} / ${TIER_TOTAL(ti)}`}</div>
-    </div>`;
-  }else{
-    pw.innerHTML=`<div class="prog-card"><div class="remain">로그인하면 단계별 진척도와 다음 레벨까지 남은 %가 기록돼요.</div></div>`;
-  }
-  const cv=$("#countVal"),rng=$("#rng");
-  const sync=v=>{ v=Math.max(MIN_WORDS,Math.min(maxForTier,v)); state.count=v; cv.textContent=v; rng.value=v; };
-  $("#minus").onclick=()=>sync(state.count-1); $("#plus").onclick=()=>sync(state.count+1); rng.oninput=()=>sync(+rng.value);
-  $("#back").onclick=screenLevelIntro;
-  $("#start").onclick=()=>{ state.assigned=sample(byTier(state.tier),state.count); screenStudy(); };
+  const pw=$("#progWrap"); const ti=pickSel;
+  const used=usedCount(ti), rem=TIER_TOTAL(ti)-used, p=Math.round(used/TIER_TOTAL(ti)*100);
+  pw.innerHTML=`<div class="prog-card">
+    <div class="top"><b>${esc(TIER_META[ti].name)}</b><span>${TIER_DESC[ti]?'':''}학습 ${used} / ${TIER_TOTAL(ti)}</span></div>
+    <div class="pbar"><i style="width:${p}%"></i></div>
+    <div class="remain">${TIER_DESC[ti]} · 남은 새 단어 <b style="color:var(--green-deep)">${rem}개</b></div>
+  </div>`;
+  $("#back").onclick=()=>{ pickSel=null; (at!=null?screenStudyHub():screenHome()); };
+  $("#start").onclick=async()=>{ setActiveTier(pickSel); state.tier=pickSel; pickSel=null; if(auth.user) await saveCurrent(); screenStudyHub(); };
 }
 
 // ---- 3. Study ----
@@ -489,12 +649,18 @@ function screenStudy(){
     <div class="hint"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span>소리 내어 읽으면 더 잘 외워져요. 전부 외울 필요는 없어요 — 시험이 약점을 짚어 줄 거예요.</span></div>
     <div class="actions"><button class="btn ghost" id="re">단어 다시 뽑기</button><button class="btn primary" id="toTest">시험 보러 가기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
   </div>`;
-  $("#re").onclick=()=>{ state.assigned=sample(byTier(state.tier),state.count); screenStudy(); };
+  $("#re").onclick=()=>{ const av=availForTier(state.tier); state.assigned=sample(av.length?av:byTier(state.tier), Math.min(state.count, (av.length?av.length:state.count))); screenStudy(); };
   $("#toTest").onclick=startTest;
 }
 
 // ---- 4. Test ----
-function startTest(){ state.test=shuffle(state.assigned).map(w=>({word:w,options:shuffle([w.ko,...distractors(w,3)])})); state.answers=[]; state.qIndex=0; renderTestQ(); }
+function startTest(){
+  // 시험으로 넘어가면 이 단어들은 '쓴 단어'로 기록 → 초기화 전까지 다시 안 나옴
+  const byT={}; state.assigned.forEach(w=>{ (byT[w.tier]=byT[w.tier]||[]).push(w.en); });
+  Object.keys(byT).forEach(t=>addUsed(+t, byT[t]));
+  if(auth.user) saveCurrent();
+  state.test=shuffle(state.assigned).map(w=>({word:w,options:shuffle([w.ko,...distractors(w,3)])})); state.answers=[]; state.qIndex=0; renderTestQ();
+}
 function renderTestQ(){
   setStep("test");
   const i=state.qIndex,total=state.test.length,item=state.test[i],w=item.word;
@@ -550,13 +716,13 @@ function screenResult(){
     </div>
     <div class="stat-row"><div class="stat ok"><b>${correct.length}</b><span>맞힌 단어</span></div><div class="stat no"><b>${wrong.length}</b><span>틀린 단어</span></div></div>
     <div class="analysis"><h3><span class="d r"></span>다시 볼 단어 (${wrong.length})</h3>${noRows}<h3><span class="d g"></span>맞힌 단어 (${correct.length})</h3>${okRows}</div>
-    <div class="actions">${wrong.length?`<button class="btn primary" id="retry">틀린 단어만 다시 시험</button>`:""}<button class="btn ${wrong.length?'ghost':'primary'}" id="again">새 단어로 다시 하기</button></div>
-    <div class="actions" style="margin-top:11px">${auth.user?`<button class="btn ghost" id="rec2">내 기록 보기</button>`:""}<button class="btn ghost" id="home">처음부터</button></div>
+    <div class="actions">${wrong.length?`<button class="btn primary" id="retry">틀린 단어만 다시 시험</button>`:""}<button class="btn ${wrong.length?'ghost':'primary'}" id="again">새 단어로 이어서</button></div>
+    <div class="actions" style="margin-top:11px">${auth.user?`<button class="btn ghost" id="rec2">내 기록 보기</button>`:""}<button class="btn ghost" id="home">메인으로</button></div>
   </div>`;
   if(wrong.length){ $("#retry").onclick=()=>{ state.assigned=wrong.map(a=>a.word); state.count=state.assigned.length; screenStudy(); }; }
-  $("#again").onclick=screenSetup;
+  $("#again").onclick=()=>{ const at=getActiveTier(); if(at!=null && availForTier(at).length) continueStudy(); else screenStudyHub(); };
   if(auth.user) $("#rec2").onclick=screenRecords;
-  $("#home").onclick=()=>{ state.tier=null; state.diagnosis=null; screenLevelIntro(); };
+  $("#home").onclick=screenHome;
 }
 
 // ---- 내 기록 ----
@@ -584,13 +750,14 @@ function screenRecords(){
     <div class="stat-row three"><div class="stat"><b>${n}</b><span>학습 세션</span></div><div class="stat ok"><b>${avg}<span style="font-size:15px">%</span></b><span>평균 정답률</span></div><div class="stat"><b>${correctEver.size}</b><span>맞힌 단어 수</span></div></div>
     <div class="nick"><input id="nickIn" maxlength="16" placeholder="표시할 닉네임 (선택)" value="${esc(nick)}"><button class="btn ghost sm" id="nickSave">저장</button></div>
     <div class="analysis"><h3><span class="d r"></span>복습이 필요한 단어 (${weak.length})</h3>${weakRows}${weak.length?`<div class="actions" style="margin-top:4px"><button class="btn primary sm" id="reviewWeak">이 단어들로 복습 시험</button></div>`:""}<h3 style="margin-top:28px"><span class="d g"></span>최근 학습 기록</h3>${histRows}</div>
-    <div class="actions"><button class="btn primary" id="learn">새 학습 시작하기</button></div>
+    <div class="actions"><button class="btn primary" id="learn">단어암기 하러 가기</button><button class="btn ghost" id="home">메인으로</button></div>
     <div class="actions" style="margin-top:11px"><button class="btn danger sm" id="clear">기록 전체 삭제</button></div>
   </div>`;
   $("#logout").onclick=logout;
+  $("#home").onclick=screenHome;
   $("#nickSave").onclick=async()=>{ const a2=acc()||{sessions:[]}; a2.nickname=($("#nickIn").value||"").trim().slice(0,16); auth.data=a2; const b=$("#nickSave"); b.disabled=true; b.textContent="저장 중…"; const ok=await saveCurrent(); renderAccountUI(); b.disabled=false; b.textContent=ok?"저장됨 ✓":"실패"; setTimeout(()=>{ if($("#nickSave"))$("#nickSave").textContent="저장"; },1400); };
   if(weak.length){ $("#reviewWeak").onclick=()=>{ const words=weak.map(w=>findEn(w.en)).filter(Boolean); if(!words.length) return; state.assigned=words; state.count=words.length; if(state.tier==null) state.tier=words[0].tier; screenStudy(); }; }
-  $("#learn").onclick=()=>{ state.tier=null; state.diagnosis=null; screenLevelIntro(); };
+  $("#learn").onclick=screenStudyHub;
   const clr=$("#clear"); let armed=false;
   clr.onclick=async()=>{ if(!armed){ armed=true; clr.textContent="한 번 더 누르면 삭제돼요"; setTimeout(()=>{armed=false; if($("#clear"))$("#clear").textContent="기록 전체 삭제";},3000); return; } const a2=acc()||{}; a2.sessions=[]; auth.data=a2; await saveCurrent(); screenRecords(); };
 }
@@ -603,7 +770,7 @@ let theme=null; try{ theme=localStorage.getItem("vocab-theme"); }catch(e){}
 applyTheme(theme);
 $("#themeBtn").onclick=()=>{ const cur=document.documentElement.getAttribute("data-theme"); const next=cur==="dark"?"light":(cur==="light"?"dark":(matchMedia("(prefers-color-scheme: dark)").matches?"light":"dark")); theme=next; try{localStorage.setItem("vocab-theme",next);}catch(e){} applyTheme(next); };
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{ if(!document.documentElement.getAttribute("data-theme")) applyTheme(null); });
-$("#brand").onclick=()=>{ state.tier=null; state.diagnosis=null; auth.user?screenLevelIntro():screenAuth(); };
+$("#brand").onclick=()=>{ state.diagnosis=null; (auth.user||auth.guest)?screenHome():screenAuth(); };
 
 // ---- boot ----
 (async function boot(){
@@ -612,7 +779,7 @@ $("#brand").onclick=()=>{ state.tier=null; state.diagnosis=null; auth.user?scree
   await initCloud();
   try{ const u=localStorage.getItem(LS_SESSION); if(u){ const a=await getAccount(u); if(a){ auth.user=u; auth.data=a; } } }catch(e){}
   renderAccountUI();
-  if(auth.user) screenLevelIntro(); else screenAuth();
+  if(auth.user) screenHome(); else screenAuth();
 })();
 </script>
 </body>
