@@ -188,6 +188,14 @@ input[type=range]{width:100%;margin-top:18px;accent-color:var(--green)}
 .spell-fb.ok{color:var(--green-deep)}
 .spell-fb.no{color:var(--danger)}
 .spell-fb .ans{font-size:18px}
+.usage-mean{margin:4px 0 20px}
+.usage-mean .senses{margin:0;text-align:left;align-items:flex-start;max-width:100%}
+.usage-mean .sense{justify-content:flex-start;font-size:14px;color:var(--muted)}
+.uopt .usen{font-size:16px;font-weight:500;line-height:1.4}
+.uopt .usen b{font-weight:800;color:var(--green-deep)}
+.uopt.wrong .usen b{color:var(--danger)}
+.stat-row.four{grid-template-columns:repeat(4,1fr)}
+@media(max-width:560px){.stat-row.four{grid-template-columns:repeat(2,1fr)}}
 .miss-tags{display:inline-flex;gap:5px;margin-top:3px}
 .miss-tags .mt{font-size:10px;font-weight:700;color:var(--danger);background:var(--danger-soft);border-radius:5px;padding:1px 6px}
 /* duolingo-style roadmap */
@@ -729,12 +737,34 @@ if(typeof speechSynthesis!=="undefined"){ pickVoice(); speechSynthesis.onvoicesc
 function speak(text,rate){ try{ if(typeof speechSynthesis==="undefined") return; const u=new SpeechSynthesisUtterance(text); u.lang="en-US"; u.rate=rate||0.92; if(enVoice)u.voice=enVoice; speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){} }
 
 // ---- 4. Test (객관식 → 영작 → 듣기) ----
-const STAGES=["mc","spell","listen"];
+const STAGES=["mc","spell","listen","usage"];
 const STAGE_META={
   mc:{n:"객관식",sub:"단어의 뜻을 고르세요"},
   spell:{n:"영어 쓰기",sub:"뜻을 보고 영어 철자를 쓰세요"},
-  listen:{n:"듣기",sub:"들리는 단어의 뜻을 고르세요"}
+  listen:{n:"듣기",sub:"들리는 단어의 뜻을 고르세요"},
+  usage:{n:"예문",sub:"단어가 올바르게 쓰인 문장을 고르세요"}
 };
+// 품사별 예문 프레임 (W 자리에 단어 삽입). 정답=단어가 가진 품사 프레임, 오답=없는 품사 프레임.
+const POSFRAMES={
+  "명":["I like the W.","Look at the W.","The W is over there.","This is my W."],
+  "동":["They W every day.","Let's W together.","I want to W now.","We W after lunch."],
+  "형":["It is very W.","She looks W today.","That was a W day.","This one is too W."],
+  "부":["He speaks W.","She did it W.","They finished W.","It worked W."]
+};
+function usableUsage(w){ return (w.senses||[]).some(s=>POSFRAMES[s[0]]); }
+function fillFrame(fr,en){ return fr.replace("W",`<b>${esc(en)}</b>`); }
+function buildUsage(w){
+  const labels=(w.senses||[]).map(s=>s[0]);
+  const primary=labels.find(l=>POSFRAMES[l]); if(!primary) return null;
+  const correct=fillFrame(shuffle(POSFRAMES[primary])[0], w.en);
+  const wrongCats=Object.keys(POSFRAMES).filter(c=>!labels.includes(c));
+  let pool=[]; wrongCats.forEach(c=>POSFRAMES[c].forEach(f=>pool.push(f)));
+  pool=shuffle(pool);
+  const wrongs=[]; for(const f of pool){ const s=fillFrame(f,w.en); if(s!==correct&&!wrongs.includes(s)){wrongs.push(s);} if(wrongs.length>=2)break; }
+  if(wrongs.length<2) return null;
+  const opts=shuffle([{t:correct,ok:true},{t:wrongs[0],ok:false},{t:wrongs[1],ok:false}]);
+  return {opts, primary};
+}
 let test={si:0,qi:0,order:{},ans:{}};
 const normEn=s=>String(s||"").trim().toLowerCase().replace(/[^a-z]/g,"");
 function startTest(){
@@ -742,7 +772,7 @@ function startTest(){
   const byT={}; state.assigned.forEach(w=>{ (byT[w.tier]=byT[w.tier]||[]).push(w.en); });
   Object.keys(byT).forEach(t=>addUsed(+t, byT[t]));
   if(auth.user) saveCurrent();
-  test={ si:0, qi:0, order:{ mc:shuffle(state.assigned), spell:shuffle(state.assigned), listen:shuffle(state.assigned) }, ans:{ mc:[], spell:[], listen:[] } };
+  test={ si:0, qi:0, order:{ mc:shuffle(state.assigned), spell:shuffle(state.assigned), listen:shuffle(state.assigned), usage:shuffle(state.assigned.filter(usableUsage)) }, ans:{ mc:[], spell:[], listen:[], usage:[] } };
   runStage();
 }
 function stageHeader(stage){
@@ -758,7 +788,8 @@ function runStage(){
   if(test.qi>=arr.length){ test.si++; test.qi=0; if(test.si>=STAGES.length){ screenResult(); return; } return runStage(); }
   if(stage==="mc") renderMC();
   else if(stage==="spell") renderSpell();
-  else renderListen();
+  else if(stage==="listen") renderListen();
+  else renderUsage();
 }
 function afterAnswer(){ test.qi++; runStage(); }
 // 객관식 / 듣기 공통: 보기(한국어 뜻) 고르기
@@ -823,6 +854,29 @@ function renderSpell(){
   $("#spf").onsubmit=e=>{ e.preventDefault(); submit(inp.value); };
   $("#skip").onclick=()=>submit("");
 }
+// 품사 예문 퀴즈: 단어가 올바르게 쓰인 문장 고르기
+function renderUsage(){
+  const w=test.order.usage[test.qi];
+  const q=buildUsage(w);
+  if(!q){ test.ans.usage.push({word:w,correct:true}); return afterAnswer(); } // 만들 수 없으면 통과 처리
+  view.innerHTML=`
+  <div class="card fade">
+    ${stageHeader("usage")}
+    <p class="prompt-sub">이 단어가 <b>자연스럽게 쓰인</b> 문장은?</p>
+    <div class="prompt-word">${esc(w.en)} <button class="say inl" id="say" aria-label="발음">${ICspk}</button></div>
+    <div class="usage-mean">${sensesHtml(w)}</div>
+    <div class="opts uopts" id="opts"></div>
+  </div>`;
+  const s=$("#say"); if(s)s.onclick=()=>speak(w.en);
+  const box=$("#opts");
+  q.opts.forEach((o,k)=>{ const b=document.createElement("button"); b.className="opt uopt"; b.innerHTML=`<span class="key">${KEYS[k]}</span><span class="usen">${o.t}</span>`; b.onclick=()=>pick(b,o); box.appendChild(b); });
+  function pick(btn,o){
+    test.ans.usage.push({word:w,correct:o.ok});
+    box.querySelectorAll(".opt").forEach(el=>el.classList.add("disabled"));
+    q.opts.forEach((oo,k)=>{ const el=box.children[k]; if(oo.ok) el.classList.add("correct"); else if(el===btn) el.classList.add("wrong"); else el.classList.add("dim"); });
+    setTimeout(afterAnswer, o.ok?640:1250);
+  }
+}
 
 // ---- 5. Result (3단계 종합) ----
 function screenResult(){
@@ -845,12 +899,12 @@ function screenResult(){
   else if(pct>=60){verdict="잘하고 있어요";note="절반 이상 맞혔어요. 약한 단계를 다시 봐요.";}
   else if(pct>=40){verdict="조금 더 힘내요";note="아직 낯선 단어가 많네요. 암기부터 다시.";}
   else {verdict="처음이 어렵죠";note="천천히 다시 외우면 금방 익숙해져요.";}
-  const STLAB={mc:"객관식",spell:"영작",listen:"듣기"};
+  const STLAB={mc:"객관식",spell:"영작",listen:"듣기",usage:"예문"};
   let savedLine="";
   if(auth.user){
     const a=acc()||{sessions:[]};
     a.sessions=(a.sessions||[]).concat([{ ts:Date.now(),tier:state.tier,total:state.assigned.length,correct:mcRight.length,pct,
-      stages:{mc:[stageC.mc,stageT.mc],spell:[stageC.spell,stageT.spell],listen:[stageC.listen,stageT.listen]},
+      stages:{mc:[stageC.mc,stageT.mc],spell:[stageC.spell,stageT.spell],listen:[stageC.listen,stageT.listen],usage:[stageC.usage,stageT.usage]},
       wrong:mcWrong.map(x=>({en:x.en,ko:x.ko})), right:mcRight.map(x=>({en:x.en,ko:x.ko})) }]).slice(-120);
     auth.data=a;
     saveCurrent().then(ok=>{ const t=$("#saveLine"); if(!t) return; t.className="saved-tag"+(ok?"":" muted"); t.innerHTML = ok?`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> ${esc(auth.user)} 계정에 저장했어요${isOnline()?' (온라인)':''}`:`저장에 실패했어요. 잠시 후 다시 시도해 주세요.`; });
@@ -863,16 +917,17 @@ function screenResult(){
   const stPct=s=>stageT[s]?Math.round(stageC[s]/stageT[s]*100):0;
   view.innerHTML=`
   <div class="card fade">
-    <div class="eyebrow">결과 분석 · 3단계 종합</div>
+    <div class="eyebrow">결과 분석 · 4단계 종합</div>
     <div class="score-ring">
       <div class="ring"><svg width="168" height="168"><circle cx="84" cy="84" r="74" fill="none" stroke="var(--surface-2)" stroke-width="13"/><circle cx="84" cy="84" r="74" fill="none" stroke="var(--green)" stroke-width="13" stroke-linecap="round" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"/></svg><div class="num"><b>${pct}<span style="font-size:20px">%</span></b><span>${totalC} / ${totalQ} 정답</span></div></div>
       <div class="verdict">${verdict}<small>${note}</small></div>
       ${savedLine}
     </div>
-    <div class="stat-row three">
+    <div class="stat-row four">
       <div class="stat"><b>${stPct("mc")}<span style="font-size:14px">%</span></b><span>객관식 ${stageC.mc}/${stageT.mc}</span></div>
       <div class="stat"><b>${stPct("spell")}<span style="font-size:14px">%</span></b><span>영작 ${stageC.spell}/${stageT.spell}</span></div>
       <div class="stat"><b>${stPct("listen")}<span style="font-size:14px">%</span></b><span>듣기 ${stageC.listen}/${stageT.listen}</span></div>
+      <div class="stat"><b>${stPct("usage")}<span style="font-size:14px">%</span></b><span>예문 ${stageC.usage}/${stageT.usage}</span></div>
     </div>
     <div class="analysis"><h3><span class="d r"></span>다시 볼 단어 (${review.length})</h3>${noRows}<h3><span class="d g"></span>완벽히 맞힌 단어 (${perfect.length})</h3>${okRows}</div>
     <div class="actions">${review.length?`<button class="btn primary" id="retry">틀린 단어만 다시</button>`:""}<button class="btn ${review.length?'ghost':'primary'}" id="again">새 단어로 이어서</button></div>
