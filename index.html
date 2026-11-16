@@ -270,6 +270,13 @@ input[type=range]{width:100%;margin-top:18px;accent-color:var(--green)}
 .hrow-btn:hover{border-color:var(--green);background:var(--green-soft)}
 .hrow .hchev{margin-left:10px;color:var(--faint);display:flex;flex:none}
 .hrow .hchev svg{width:16px;height:16px}
+.day-group{margin-bottom:14px}
+.day-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:16px 0 8px;padding-bottom:7px;border-bottom:1.5px solid var(--line)}
+.day-head b{font-size:14.5px;font-weight:800}
+.day-head span{font-size:12px;color:var(--faint);font-weight:600}
+.trend-card{background:var(--surface-2);border-radius:14px;padding:14px 14px 10px;margin-top:4px}
+.trend-card svg{display:block}
+.trend-cap{font-size:12px;color:var(--muted);text-align:center;margin-top:6px}
 .nick{display:flex;gap:10px;margin-top:14px}
 .nick input{flex:1;min-width:0;border:1.5px solid var(--line);background:var(--surface);color:var(--fg);border-radius:12px;padding:12px 14px;font-size:15px;font-family:inherit}
 .nick input:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px var(--green-ring)}
@@ -1019,6 +1026,24 @@ function screenSession(s){
   $("#back").onclick=screenRecords;
   if(weak.length){ $("#reviewW").onclick=()=>{ const ws=weak.map(it=>findEn(it.en)).filter(Boolean); if(!ws.length)return; state.assigned=ws; state.count=ws.length; if(state.tier==null)state.tier=s.tier; screenStudy(); }; }
 }
+// 정답률 추이 라인 그래프 (인라인 SVG)
+function trendSvg(chron){
+  const data=chron.slice(-20).map(s=>s.pct||0);
+  if(!data.length) return '';
+  const W=320,H=150,pL=26,pR=12,pT=14,pB=18, iw=W-pL-pR, ih=H-pT-pB, n=data.length;
+  const xo=i=>pL+(n<=1?iw/2:iw*i/(n-1)), yo=v=>pT+ih*(1-v/100);
+  const pts=data.map((v,i)=>[xo(i),yo(v)]);
+  const line=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  const grid=[0,50,100].map(v=>`<line x1="${pL}" y1="${yo(v).toFixed(1)}" x2="${W-pR}" y2="${yo(v).toFixed(1)}" stroke="var(--line)" stroke-width="1"/><text x="${pL-5}" y="${(yo(v)+3).toFixed(1)}" text-anchor="end" font-size="9" fill="var(--faint)">${v}</text>`).join('');
+  const avg=Math.round(data.reduce((a,b)=>a+b,0)/n);
+  const avgLine=n>=2?`<line x1="${pL}" y1="${yo(avg).toFixed(1)}" x2="${W-pR}" y2="${yo(avg).toFixed(1)}" stroke="var(--green-deep)" stroke-width="1" stroke-dasharray="4 4" opacity="0.6"/><text x="${W-pR}" y="${(yo(avg)-4).toFixed(1)}" text-anchor="end" font-size="9" font-weight="700" fill="var(--green-deep)">평균 ${avg}%</text>`:'';
+  const area=n>=2?`<path d="${line} L ${xo(n-1).toFixed(1)} ${(pT+ih).toFixed(1)} L ${xo(0).toFixed(1)} ${(pT+ih).toFixed(1)} Z" fill="var(--green-soft)" opacity="0.7"/>`:'';
+  const path=n>=2?`<path d="${line}" fill="none" stroke="var(--green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`:'';
+  const dots=pts.map((p,i)=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${i===n-1?4:2.5}" fill="var(--green${i===n-1?'-deep':''})" ${i===n-1?'stroke="var(--surface)" stroke-width="2"':''}/>`).join('');
+  const last=data[n-1];
+  const lastLabel=`<text x="${xo(n-1).toFixed(1)}" y="${Math.max(pT+8,yo(last)-9).toFixed(1)}" text-anchor="${n<=1?'middle':'end'}" font-size="11" font-weight="800" fill="var(--green-deep)">${last}%</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="정답률 추이 그래프">${grid}${avgLine}${area}${path}${dots}${lastLabel}</svg>`;
+}
 function screenRecords(){
   setStep("");
   if(!auth.user){
@@ -1035,8 +1060,21 @@ function screenRecords(){
   const weak=Object.keys(wrongCount).map(en=>({en,ko:koOf[en],c:wrongCount[en]})).sort((p,q)=>q.c-p.c).slice(0,15);
   const nick=a.nickname||"";
   const weakRows=weak.length?weak.map(w=>`<div class="wrow"><span class="en">${esc(w.en)}</span><span class="ko">${esc(w.ko)}</span><span class="cnt">${w.c}회 틀림</span></div>`).join(""):`<p class="empty-note">아직 반복해서 틀린 단어가 없어요. 좋아요!</p>`;
-  const recent=sessions.slice(0,15);
-  const histRows=n?recent.map((s,i)=>`<button class="hrow hrow-btn" data-i="${i}"><span class="date">${fmtDate(s.ts)}</span><span class="lv">${esc((TIER_META[s.tier]||{}).name||'-')} · ${s.total}단어</span><span class="pct">${s.pct}%<small> (${s.oc!=null?s.oc:s.correct}/${s.ot!=null?s.ot:s.total})</small></span><span class="hchev">${IC.chev}</span></button>`).join(""):`<p class="empty-note">아직 시험 기록이 없어요. 첫 학습을 시작해 보세요.</p>`;
+  const chron=sessions.slice().reverse(); // 오래된→최신
+  const trend=n?`<div class="trend-card">${trendSvg(chron)}<div class="trend-cap">${n>=2?`최근 ${Math.min(n,20)}회 · 점선=평균 ${avg}%`:'시험을 더 보면 추이선이 그려져요'}</div></div>`:"";
+  // 날짜별 묶기 (최근 40회)
+  const DOW=['일','월','화','수','목','금','토'];
+  const p2=x=>String(x).padStart(2,'0');
+  const histList=sessions.slice(0,40), groups=[], gmap={};
+  histList.forEach((s,i)=>{ const d=new Date(s.ts), key=`${d.getFullYear()}.${p2(d.getMonth()+1)}.${p2(d.getDate())}`;
+    if(!gmap[key]){ gmap[key]={key,d,items:[]}; groups.push(gmap[key]); } gmap[key].items.push({s,gi:i}); });
+  const histRows=n?groups.map(g=>{
+    const ps=g.items.map(o=>o.s.pct||0), gavg=Math.round(ps.reduce((a,b)=>a+b,0)/ps.length);
+    const words=g.items.reduce((a,o)=>a+(o.s.total||0),0);
+    const rows=g.items.map(o=>{ const s=o.s, t=new Date(s.ts), hm=`${p2(t.getHours())}:${p2(t.getMinutes())}`;
+      return `<button class="hrow hrow-btn" data-i="${o.gi}"><span class="date">${hm}</span><span class="lv">${esc((TIER_META[s.tier]||{}).name||'-')} · ${s.total}단어</span><span class="pct">${s.pct}%<small> (${s.oc!=null?s.oc:s.correct}/${s.ot!=null?s.ot:s.total})</small></span><span class="hchev">${IC.chev}</span></button>`; }).join("");
+    return `<div class="day-group"><div class="day-head"><b>${g.key.slice(5)} (${DOW[g.d.getDay()]})</b><span>${g.items.length}회 · 평균 ${gavg}% · ${words}단어</span></div>${rows}</div>`;
+  }).join(""):`<p class="empty-note">아직 시험 기록이 없어요. 첫 학습을 시작해 보세요.</p>`;
   view.innerHTML=`
   <div class="card fade">
     <div class="study-head"><div><div class="eyebrow">내 기록</div><h2 class="title">${nick?esc(nick)+"님의 현황":esc(auth.user)+"님의 현황"}</h2></div><button class="btn ghost sm" id="logout">로그아웃</button></div>
@@ -1044,6 +1082,7 @@ function screenRecords(){
     <h3 class="sect-h"><span class="d g"></span>내 레벨 여정</h3>
     ${roadmapHtml()}
     <div class="stat-row three" style="margin-top:20px"><div class="stat"><b>${n}</b><span>학습 세션</span></div><div class="stat ok"><b>${avg}<span style="font-size:15px">%</span></b><span>평균 정답률</span></div><div class="stat"><b>${correctEver.size}</b><span>맞힌 단어 수</span></div></div>
+    ${n?`<h3 class="sect-h"><span class="d g"></span>정답률 추이</h3>${trend}`:""}
     <div class="nick"><input id="nickIn" maxlength="16" placeholder="표시할 닉네임 (선택)" value="${esc(nick)}"><button class="btn ghost sm" id="nickSave">저장</button></div>
     <div class="analysis"><h3><span class="d r"></span>복습이 필요한 단어 (${weak.length})</h3>${weakRows}${weak.length?`<div class="actions" style="margin-top:4px"><button class="btn primary sm" id="reviewWeak">이 단어들로 복습 시험</button></div>`:""}<h3 style="margin-top:28px"><span class="d g"></span>회차별 기록 <span style="font-weight:500;color:var(--faint);font-size:12.5px">· 누르면 그날 단어 결과를 봐요</span></h3>${histRows}</div>
     <div class="actions"><button class="btn primary" id="learn">단어암기 하러 가기</button><button class="btn ghost" id="home">메인으로</button></div>
@@ -1053,7 +1092,7 @@ function screenRecords(){
   $("#home").onclick=screenHome;
   $("#nickSave").onclick=async()=>{ const a2=acc()||{sessions:[]}; a2.nickname=($("#nickIn").value||"").trim().slice(0,16); auth.data=a2; const b=$("#nickSave"); b.disabled=true; b.textContent="저장 중…"; const ok=await saveCurrent(); renderAccountUI(); b.disabled=false; b.textContent=ok?"저장됨 ✓":"실패"; setTimeout(()=>{ if($("#nickSave"))$("#nickSave").textContent="저장"; },1400); };
   if(weak.length){ $("#reviewWeak").onclick=()=>{ const words=weak.map(w=>findEn(w.en)).filter(Boolean); if(!words.length) return; state.assigned=words; state.count=words.length; if(state.tier==null) state.tier=words[0].tier; screenStudy(); }; }
-  document.querySelectorAll(".hrow-btn").forEach(b=>b.onclick=()=>screenSession(recent[+b.dataset.i]));
+  document.querySelectorAll(".hrow-btn").forEach(b=>b.onclick=()=>screenSession(sessions[+b.dataset.i]));
   $("#learn").onclick=screenStudyHub;
   const clr=$("#clear"); let armed=false;
   clr.onclick=async()=>{ if(!armed){ armed=true; clr.textContent="한 번 더 누르면 삭제돼요"; setTimeout(()=>{armed=false; if($("#clear"))$("#clear").textContent="기록 전체 삭제";},3000); return; } const a2=acc()||{}; a2.sessions=[]; auth.data=a2; await saveCurrent(); screenRecords(); };
