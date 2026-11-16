@@ -612,7 +612,9 @@ function screenSettings(){
     <h2 class="title">환경 설정</h2>
     <p class="lede">${auth.user?`아이디 <b>${esc(auth.user)}</b>로 로그인되어 있어요.`:'로그인하면 기록과 진행 상황이 저장돼요.'}</p>
     <div class="field"><label>테마</label><div class="actions" style="margin-top:0">${tbtn("light","밝게")}${tbtn("dark","어둡게")}${tbtn("auto","시스템")}</div></div>
+    <div class="field"><label>레벨 테스트</label><p class="lede" style="margin-top:0;margin-bottom:12px">진단 퀴즈(9문제)를 다시 풀어 추천 단계를 새로 받아요. 학습 기록은 그대로 유지돼요.</p><button class="btn ghost" id="redoDiag">레벨 테스트 다시 보기</button></div>
     ${at!=null?`<div class="field"><label>현재 단계 (${esc(TIER_META[at].name)}) 초기화</label><p class="lede" style="margin-top:0;margin-bottom:12px">학습한 단어 기록을 지워서 이 단계의 단어가 처음부터 다시 나와요.</p><button class="btn danger sm" id="resetTier">이 단계 초기화</button></div>`:''}
+    ${auth.user?`<div class="field"><label style="color:var(--danger)">계정 전체 초기화</label><p class="lede" style="margin-top:0;margin-bottom:12px">학습 기록·진행 단계·쓴 단어를 <b>전부</b> 지우고 <b>레벨 테스트부터 새로</b> 시작해요. 아이디·비밀번호는 유지돼요. <b>되돌릴 수 없어요.</b></p><button class="btn danger sm" id="resetAll">계정 전체 초기화</button></div>`:''}
     <div class="actions">
       ${auth.user?`<button class="btn ghost" id="logout">로그아웃</button>`:`<button class="btn primary" id="login">로그인 / 회원가입</button>`}
     </div>
@@ -621,8 +623,14 @@ function screenSettings(){
   document.querySelectorAll("[data-th]").forEach(b=>b.onclick=()=>{ const v=b.dataset.th; theme=(v==="auto"?null:v); try{localStorage.setItem("vocab-theme",v==="auto"?"":v);}catch(e){} applyTheme(theme); screenSettings(); });
   $("#back").onclick=screenHome;
   if(auth.user) $("#logout").onclick=logout; else $("#login").onclick=screenAuth;
+  $("#redoDiag").onclick=startDiag;
   const rt=$("#resetTier");
   if(rt){ let armed=false; rt.onclick=async()=>{ if(!armed){ armed=true; rt.textContent="한 번 더 누르면 초기화돼요"; setTimeout(()=>{armed=false; if($("#resetTier"))$("#resetTier").textContent="이 단계 초기화";},3000); return; } resetTier(at); if(auth.user) await saveCurrent(); screenSettings(); }; }
+  const ra=$("#resetAll");
+  if(ra){ let armed=false; ra.onclick=async()=>{ if(!armed){ armed=true; ra.textContent="한 번 더 누르면 전부 삭제돼요"; setTimeout(()=>{armed=false; if($("#resetAll"))$("#resetAll").textContent="계정 전체 초기화";},3000); return; }
+    const a=acc(); if(a){ a.used={}; a.activeTier=null; a.sessions=[]; auth.data=a; await saveCurrent(); }
+    state.used={}; state.activeTier=null; state.tier=null; state.diagnosis=null;
+    startDiag(); }; }
 }
 
 // ---- 1. Diagnosis (9 tiers) ----
