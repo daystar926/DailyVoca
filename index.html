@@ -188,6 +188,7 @@ input[type=range]{width:100%;margin-top:18px;accent-color:var(--green)}
 .spell-fb.ok{color:var(--green-deep)}
 .spell-fb.no{color:var(--danger)}
 .spell-fb .ans{font-size:18px}
+.usage-hint{font-size:12.5px;color:var(--faint);margin:2px 0 18px}
 .usage-mean{margin:4px 0 20px}
 .usage-mean .senses{margin:0;text-align:left;align-items:flex-start;max-width:100%}
 .usage-mean .sense{justify-content:flex-start;font-size:14px;color:var(--muted)}
@@ -875,7 +876,7 @@ function renderUsage(){
     ${stageHeader("usage")}
     <p class="prompt-sub">이 단어가 <b>자연스럽게 쓰인</b> 문장은?</p>
     <div class="prompt-word">${esc(w.en)} <button class="say inl" id="say" aria-label="발음">${ICspk}</button></div>
-    <div class="usage-mean">${sensesHtml(w)}</div>
+    <div class="usage-hint">뜻·품사 없이, 문장만 보고 골라요</div>
     <div class="opts uopts" id="opts"></div>
   </div>`;
   const s=$("#say"); if(s)s.onclick=()=>speak(w.en);
