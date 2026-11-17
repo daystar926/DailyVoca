@@ -708,7 +708,11 @@ function renderDiagQ(){
     b.onclick=()=>{ if(o===w.ko) diag.correct[w.tier]=true; diag.i++; (diag.i>=total)?finishDiag():renderDiagQ(); }; box.appendChild(b); });
 }
 async function finishDiag(){
-  let rec=0, cnt=0; for(let i=0;i<NT;i++){ if(diag.correct[i]){ rec=i; cnt++; } }
+  let cnt=0; for(let i=0;i<NT;i++) if(diag.correct[i]) cnt++;
+  // 추천 단계 = 쉬운 단계부터 올라가며 '누적 오답 1개까지 허용'하고 도달한 가장 높은 단계.
+  // (어려운 문제를 운으로 맞혀도 그 아래에서 막히면 점프하지 않음)
+  let miss=0, rec=0;
+  for(let i=0;i<NT;i++){ if(!diag.correct[i]) miss++; if(miss<=1) rec=i; else break; }
   state.tier=rec; state.diagnosis={cnt};
   setActiveTier(rec); if(auth.user) await saveCurrent();
   screenLevelResult();
