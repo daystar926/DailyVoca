@@ -189,6 +189,21 @@ input[type=range]{width:100%;margin-top:18px;accent-color:var(--green)}
 .spell-fb.no{color:var(--danger)}
 .spell-fb .ans{font-size:18px}
 .usage-hint{font-size:12.5px;color:var(--faint);margin:2px 0 18px}
+.cloze{font-size:22px;font-weight:600;line-height:1.5;margin:6px 0 24px;word-break:keep-all}
+.cloze .blank{display:inline-block;min-width:60px;text-align:center;color:var(--green-deep);border-bottom:2.5px solid var(--green);font-weight:800;letter-spacing:1px;padding:0 6px}
+.cloze .blank.ok{color:var(--green-deep);border-color:var(--green)}
+.cloze .blank.no{color:var(--danger);border-color:var(--danger)}
+.review-card{border:1.5px solid var(--line);border-radius:15px;padding:16px 18px;margin-top:16px}
+.review-card.hot{border-color:var(--green);background:var(--green-soft)}
+.review-card .rc-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.review-card .rc-top b{font-size:15px;font-weight:800}
+.review-card .rc-pass{font-size:11px;font-weight:800;color:var(--green-deep);background:var(--surface);border-radius:99px;padding:3px 10px}
+.review-card .rc-desc{font-size:13px;color:var(--muted);margin:8px 0 14px}
+.review-card .btn{width:100%}
+.levelup-banner{display:flex;align-items:center;gap:14px;background:var(--green);border-radius:16px;padding:16px 18px;margin:18px 0 4px;box-shadow:0 8px 24px var(--green-ring)}
+.levelup-banner .lu-ic{font-size:34px;flex:none}
+.levelup-banner .lu-t b{display:block;font-size:17px;font-weight:800;color:#0e2414}
+.levelup-banner .lu-t span{font-size:13px;color:#15241a;opacity:.85}
 .usage-mean{margin:4px 0 20px}
 .usage-mean .senses{margin:0;text-align:left;align-items:flex-start;max-width:100%}
 .usage-mean .sense{justify-content:flex-start;font-size:14px;color:var(--muted)}
@@ -367,7 +382,10 @@ function distractors(word,n){
 const KEYS=["A","B","C","D"];
 function fmtDate(ts){ const d=new Date(ts),p=x=>String(x).padStart(2,"0"); return `${d.getMonth()+1}/${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}`; }
 
-let state = { tier:null, count:DEFAULT_WORDS, assigned:[], test:[], answers:[], qIndex:0, diagnosis:null, used:{}, activeTier:null };
+let state = { tier:null, count:DEFAULT_WORDS, assigned:[], test:[], answers:[], qIndex:0, diagnosis:null, used:{}, activeTier:null, reviewMode:false, _hubTier:null };
+const REC_FIRST=10, REC_AFTER=30, REVIEW_SIZE=30, LEVELUP_PCT=80;
+function isPassed(t){ if(auth.user){ const a=acc(); return !!(a&&a.passed&&a.passed[t]); } return !!(state.passed&&state.passed[t]); }
+function markPassed(t){ if(auth.user){ const a=acc(); if(a){ a.passed=a.passed||{}; a.passed[t]=true; } } else { state.passed=state.passed||{}; state.passed[t]=true; } }
 
 // ---- per-user progress: used words (안 겹치게) + active tier (이어서) ----
 // logged-in → account에 저장, guest → state(메모리)
@@ -550,29 +568,36 @@ function screenStudyHub(){
   }
   const total=TIER_TOTAL(at), used=usedCount(at), rem=total-used, p=Math.round(used/total*100);
   const counts=masteryCounts(), mastered=counts[at];
-  const maxForTier=Math.min(MAX_WORDS, rem);
+  const maxForTier=Math.min(MAX_WORDS, Math.max(MIN_WORDS,rem));
+  const rec = used===0 ? REC_FIRST : REC_AFTER;   // 처음 10, 이후 30
+  if(state._hubTier!==at){ state._hubTier=at; state.count=Math.max(MIN_WORDS, Math.min(maxForTier, rec)); }
   if(state.count>maxForTier) state.count=Math.max(MIN_WORDS,maxForTier);
   if(state.count<MIN_WORDS) state.count=MIN_WORDS;
-  const done = rem<=0;
+  const done = rem<=0, passed=isPassed(at), isLast=at>=NT-1, rsize=Math.min(REVIEW_SIZE,total);
   view.innerHTML=`
   <div class="card fade">
-    <div class="study-head"><div><div class="eyebrow">단어암기</div><h2 class="title">이어서 공부해요</h2></div><span class="chip">${esc(TIER_META[at].name)}</span></div>
+    <div class="study-head"><div><div class="eyebrow">단어암기</div><h2 class="title">이어서 공부해요</h2></div><span class="chip">${esc(TIER_META[at].name)}${passed?' · 통과 ✓':''}</span></div>
     <p class="lede">이미 외운 단어는 빼고, ${esc(TIER_META[at].name)} 단계의 <b>새 단어</b>만 뽑아 드려요.</p>
     <div class="prog-card">
       <div class="top"><b>학습한 단어</b><span>${used} / ${total}</span></div>
       <div class="pbar"><i style="width:${p}%"></i></div>
       <div class="remain">남은 새 단어 <b style="color:var(--green-deep)">${rem}개</b>${auth.user?` · 시험에서 맞힌 단어 ${mastered} / ${total}`:``}</div>
     </div>
-    ${done?`<div class="hint warn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>이 단계의 단어를 모두 학습했어요! <b>처음부터 다시 시작하기</b>로 초기화하거나 단계를 바꿔 보세요.</span></div>`:`
+    ${done?`<div class="hint"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>이 단계의 <b>${total}단어</b>를 모두 학습했어요! 아래 <b>레벨 복습</b>으로 마무리하고 레벨업하세요.</span></div>`:`
     <div class="field" style="margin-top:22px">
-      <label>한 번에 외울 단어 개수 <span style="color:var(--faint);font-weight:500">· 권장 ${DEFAULT_WORDS}개</span></label>
+      <label>한 번에 외울 단어 개수 <span style="color:var(--faint);font-weight:500">· 권장 ${rec}개${used===0?' (첫 학습)':''}</span></label>
       <div class="stepper"><button id="minus" aria-label="줄이기">−</button><div><div class="count-val" id="countVal">${state.count}</div><div class="count-unit">단어</div></div><button id="plus" aria-label="늘리기">+</button></div>
       <input type="range" id="rng" min="${MIN_WORDS}" max="${maxForTier}" value="${state.count}">
       <div class="rng-scale"><span>${MIN_WORDS}</span><span>${maxForTier}</span></div>
     </div>`}
     <div class="actions">
-      <button class="btn primary${done?'':''}" id="go" ${done?'disabled':''}>이어서 공부하기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      <button class="btn ${done?'ghost':'primary'}" id="go" ${done?'disabled':''}>이어서 공부하기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       <button class="btn ghost" id="change">레벨 바꾸기</button>
+    </div>
+    <div class="review-card ${done?'hot':''}">
+      <div class="rc-top"><b>🏆 레벨 복습 & 레벨업</b>${passed?'<span class="rc-pass">통과함 ✓</span>':''}</div>
+      <p class="rc-desc">${esc(TIER_META[at].name)} 전체에서 <b>${rsize}단어</b>를 복습·시험해요. ${isLast?'최고 단계예요! 복습으로 완성도를 높여요.':`정답률 <b>${LEVELUP_PCT}%</b> 이상이면 <b style="color:var(--green-deep)">${esc(TIER_META[at+1].name)}</b>(으)로 레벨업!`}</p>
+      <button class="btn ${done?'primary':'ghost'}" id="review">레벨 복습 시작 · ${rsize}단어</button>
     </div>
     <div class="reset-row"><button class="link-btn" id="reset">처음부터 다시 시작하기 (이 단계 초기화)</button></div>
     <div class="reset-row" style="margin-top:4px"><button class="link-btn" id="back" style="color:var(--faint)">← 메인으로</button></div>
@@ -583,6 +608,7 @@ function screenStudyHub(){
     $("#minus").onclick=()=>sync(state.count-1); $("#plus").onclick=()=>sync(state.count+1); rng.oninput=()=>sync(+rng.value);
     $("#go").onclick=continueStudy;
   }
+  $("#review").onclick=startReview;
   $("#change").onclick=screenSetup;
   $("#back").onclick=screenHome;
   const rb=$("#reset"); let armed=false;
@@ -591,11 +617,17 @@ function screenStudyHub(){
     resetTier(at); if(auth.user) await saveCurrent(); screenStudyHub();
   };
 }
+function startReview(){
+  const at=getActiveTier(); if(at==null){ screenStudyHub(); return; }
+  state.reviewMode=true; state.tier=at;
+  state.assigned=sample(byTier(at), Math.min(REVIEW_SIZE, TIER_TOTAL(at)));
+  screenStudy();
+}
 function continueStudy(){
   const at=getActiveTier(); if(at==null){ screenStudyHub(); return; }
   const avail=availForTier(at);
   if(!avail.length){ screenStudyHub(); return; }
-  state.tier=at;
+  state.reviewMode=false; state.tier=at;
   state.assigned=sample(avail, Math.min(state.count, avail.length));
   screenStudy();
 }
@@ -739,14 +771,14 @@ function screenStudy(){
   const rows=state.assigned.map((w,i)=>`<div class="wordrow"><span class="idx">${String(i+1).padStart(2,'0')}</span><div class="wcell"><span class="enline"><span class="en">${esc(w.en)}</span><button class="say" data-w="${esc(w.en)}" aria-label="발음 듣기">${ICspk}</button></span>${ipaHtml(w)}</div>${sensesHtml(w)}</div>`).join("");
   view.innerHTML=`
   <div class="card fade">
-    <div class="study-head"><div><div class="eyebrow">STEP 3 · 암기</div><h2 class="title">먼저 눈에 익혀요</h2></div><span class="chip">${esc(TIER_META[state.tier].name)} · ${state.assigned.length}단어</span></div>
+    <div class="study-head"><div><div class="eyebrow">${state.reviewMode?'🏆 레벨 복습 · 암기':'STEP 3 · 암기'}</div><h2 class="title">${state.reviewMode?'복습 단어 훑어보기':'먼저 눈에 익혀요'}</h2></div><span class="chip">${esc(TIER_META[state.tier].name)}${state.reviewMode?' 복습':''} · ${state.assigned.length}단어</span></div>
     <p class="lede">아래 단어와 뜻을 천천히 읽어 보세요. 준비되면 시험으로 넘어갑니다. 시험에서는 뜻이 숨겨져요.</p>
     <div class="wordlist">${rows}</div>
     <div class="hint"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span>소리 내어 읽으면 더 잘 외워져요. 전부 외울 필요는 없어요 — 시험이 약점을 짚어 줄 거예요.</span></div>
     <div class="actions"><button class="btn ghost" id="re">단어 다시 뽑기</button><button class="btn primary" id="toTest">시험 보러 가기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
   </div>`;
   document.querySelectorAll(".say").forEach(b=>b.onclick=()=>speak(b.dataset.w));
-  $("#re").onclick=()=>{ const av=availForTier(state.tier); state.assigned=sample(av.length?av:byTier(state.tier), Math.min(state.count, (av.length?av.length:state.count))); screenStudy(); };
+  $("#re").onclick=()=>{ if(state.reviewMode){ state.assigned=sample(byTier(state.tier), Math.min(REVIEW_SIZE, TIER_TOTAL(state.tier))); } else { const av=availForTier(state.tier); state.assigned=sample(av.length?av:byTier(state.tier), Math.min(state.count,(av.length?av.length:state.count))); } screenStudy(); };
   $("#toTest").onclick=startTest;
 }
 // ---- 발음(TTS) ----
@@ -764,34 +796,43 @@ const STAGE_META={
   listen:{n:"듣기",sub:"들리는 단어의 뜻을 고르세요"},
   usage:{n:"예문",sub:"단어가 올바르게 쓰인 문장을 고르세요"}
 };
-// 품사별 예문 프레임 (W 자리에 단어 삽입). 정답=단어가 가진 품사 프레임, 오답=없는 품사 프레임.
-const POSFRAMES={
-  "명":["I like the W.","Look at the W.","The W is over there.","This is my W."],
-  "동":["They W every day.","Let's W together.","I want to W now.","We W after lunch."],
-  "형":["It is very W.","She looks W today.","That was a W day.","This one is too W."],
-  "부":["He speaks W.","She did it W.","They finished W.","It worked W."]
+// 실제 예문(빈칸 채우기). ___ 자리에 들어갈 영단어 고르기. 큐레이션된 단어만 예문 단계에 나옴.
+const EXS={
+cat:"The ___ is sleeping on the sofa.",dog:"My ___ barks at strangers.",cow:"The ___ gives us fresh milk.",pig:"The ___ is rolling in the mud.",hen:"The ___ laid an egg this morning.",duck:"A ___ is swimming in the pond.",fish:"The ___ swims in the water.",bird:"A ___ is singing in the tree.",bear:"The ___ is sleeping in its cave.",lion:"The ___ is the king of the jungle.",tiger:"The ___ has orange and black stripes.",rabbit:"The ___ hops across the grass.",mouse:"A ___ ran under the table.",frog:"The ___ jumped into the pond.",bee:"A ___ makes honey from flowers.",fox:"The ___ has a long bushy tail.",horse:"She rides her ___ every weekend.",sheep:"The ___ has soft white wool.",monkey:"The ___ is climbing up the tree.",elephant:"The ___ has a very long trunk.",snake:"A ___ slid quietly through the grass.",
+egg:"I ate a boiled ___ for breakfast.",milk:"He drinks a glass of ___ every day.",bread:"She baked fresh ___ this morning.",rice:"We eat ___ with almost every meal.",apple:"She picked a red ___ from the tree.",banana:"A monkey loves to eat a ___.",water:"Please give me a glass of ___.",tea:"He drinks a cup of ___ every morning.",cake:"We ate ___ at the birthday party.",meat:"The dog is chewing on some ___.",salt:"Add a little ___ to the soup.",sugar:"She put ___ in her coffee.",soup:"He ate a warm bowl of ___.",
+red:"The ripe apple is bright ___.",blue:"The clear sky is ___ today.",green:"The grass turns ___ in spring.",
+mom:"My ___ cooks dinner every night.",dad:"My ___ drives me to school.",baby:"The ___ is crying for milk.",boy:"The ___ is playing soccer outside.",girl:"The ___ is reading a story.",friend:"My best ___ lives next door.",teacher:"Our ___ explains the lesson well.",doctor:"The ___ checked my temperature.",student:"The ___ studies hard for the exam.",
+hand:"She waved her ___ to say goodbye.",foot:"He hurt his ___ while running.",head:"He wore a hat on his ___.",hair:"She brushed her long ___.",eye:"I got some dust in my ___.",nose:"A rabbit has a tiny pink ___.",mouth:"Open your ___ and say ah.",tooth:"The dentist fixed my broken ___.",
+sun:"The ___ rises in the east.",moon:"The ___ shines brightly at night.",star:"I saw a bright ___ in the sky.",sky:"Birds fly high up in the ___.",rain:"The ___ made the streets wet.",snow:"The white ___ covered the hills.",wind:"The ___ blew my hat away.",tree:"A bird built a nest in the ___.",flower:"She picked a yellow ___.",river:"The small boat sailed down the ___.",sea:"We swam in the warm ___.",mountain:"They climbed to the top of the ___.",fire:"They sat around the warm ___.",ice:"The ___ slowly melted in the sun.",
+house:"They live in a big ___.",door:"Please close the ___ behind you.",window:"She opened the ___ for fresh air.",bed:"He sleeps in a soft, warm ___.",chair:"Please sit on this ___.",table:"Dinner is ready on the ___.",book:"I read an interesting ___ last night.",pen:"She signed the letter with a ___.",bag:"He carried his books in a ___.",ball:"The children kicked the ___.",clock:"The ___ on the wall shows three.",key:"I lost the ___ to my house.",car:"He drives his ___ to work.",bus:"We took the ___ to school.",phone:"She answered her ___ quickly.",money:"He saved his ___ in the bank.",
+eat:"They ___ dinner at seven o'clock.",drink:"I ___ water when I am thirsty.",sleep:"Cats ___ for many hours a day.",run:"He likes to ___ in the morning.",walk:"We ___ to school every day.",jump:"The frog can ___ very high.",sit:"Please ___ down and relax.",read:"She likes to ___ books at night.",write:"Please ___ your name right here.",sing:"The children ___ a happy song.",swim:"Fish ___ in the deep ocean.",fly:"Birds can ___ in the sky.",open:"Please ___ the window for me.",buy:"I want to ___ a new bag.",cook:"My mom will ___ dinner tonight.",wash:"Please ___ your hands before eating.",help:"Can you ___ me carry this box?",give:"Please ___ me a glass of water.",make:"Let's ___ a cake together.",sing:"They ___ songs around the fire.",
+big:"An elephant is a very ___ animal.",small:"A mouse is a ___ animal.",hot:"The soup is too ___ to eat now.",cold:"The water is very ___ in winter.",happy:"She felt ___ on her birthday.",sad:"He was ___ when his dog ran away.",fast:"A cheetah can run very ___.",slow:"A turtle is very ___.",new:"He bought a ___ car yesterday.",old:"My grandfather is very ___.",long:"A giraffe has a ___ neck.",tall:"The basketball player is very ___.",clean:"Please keep your room ___.",easy:"The math test was very ___.",
+music:"She listens to ___ on her phone.",school:"The children go to ___ every morning.",family:"I love spending time with my ___.",weather:"The ___ is sunny and warm today.",summer:"We swim at the beach in ___.",winter:"It snows a lot during ___.",
 };
-function usableUsage(w){ return (w.senses||[]).some(s=>POSFRAMES[s[0]]); }
-function fillFrame(fr,en){ return fr.replace("W",`<b>${esc(en)}</b>`); }
+function usableUsage(w){ return !!EXS[w.en]; }
+function primLabel(w){ return (w.senses&&w.senses[0]&&w.senses[0][0])||""; }
+function clozeOptions(w,n){
+  const same=shuffle(byTier(w.tier).filter(x=>x.en!==w.en && primLabel(x)===primLabel(w)));
+  let pool=same; if(pool.length<n) pool=pool.concat(shuffle(byTier(w.tier).filter(x=>x.en!==w.en)));
+  const out=[],seen=new Set([w.en.toLowerCase()]);
+  for(const x of pool){ if(out.length>=n)break; const k=x.en.toLowerCase(); if(!seen.has(k)){seen.add(k);out.push(x.en);} }
+  return out;
+}
 function buildUsage(w){
-  const labels=(w.senses||[]).map(s=>s[0]);
-  const primary=labels.find(l=>POSFRAMES[l]); if(!primary) return null;
-  const correct=fillFrame(shuffle(POSFRAMES[primary])[0], w.en);
-  const wrongCats=Object.keys(POSFRAMES).filter(c=>!labels.includes(c));
-  let pool=[]; wrongCats.forEach(c=>POSFRAMES[c].forEach(f=>pool.push(f)));
-  pool=shuffle(pool);
-  const wrongs=[]; for(const f of pool){ const s=fillFrame(f,w.en); if(s!==correct&&!wrongs.includes(s)){wrongs.push(s);} if(wrongs.length>=2)break; }
-  if(wrongs.length<2) return null;
-  const opts=shuffle([{t:correct,ok:true},{t:wrongs[0],ok:false},{t:wrongs[1],ok:false}]);
-  return {opts, primary};
+  const s=EXS[w.en]; if(!s) return null;
+  const opts=shuffle([{t:w.en,ok:true}].concat(clozeOptions(w,2).map(e=>({t:e,ok:false}))));
+  if(opts.length<2) return null;
+  return {sentence:s, opts};
 }
 let test={si:0,qi:0,order:{},ans:{}};
 const normEn=s=>String(s||"").trim().toLowerCase().replace(/[^a-z]/g,"");
 function startTest(){
-  // 시험으로 넘어가면 이 단어들은 '쓴 단어'로 기록 → 초기화 전까지 다시 안 나옴
-  const byT={}; state.assigned.forEach(w=>{ (byT[w.tier]=byT[w.tier]||[]).push(w.en); });
-  Object.keys(byT).forEach(t=>addUsed(+t, byT[t]));
-  if(auth.user) saveCurrent();
+  // 일반 학습이면 '쓴 단어'로 기록(복습은 제외 → 전체 풀 유지)
+  if(!state.reviewMode){
+    const byT={}; state.assigned.forEach(w=>{ (byT[w.tier]=byT[w.tier]||[]).push(w.en); });
+    Object.keys(byT).forEach(t=>addUsed(+t, byT[t]));
+    if(auth.user) saveCurrent();
+  }
   test={ si:0, qi:0, order:{ mc:shuffle(state.assigned), spell:shuffle(state.assigned), listen:shuffle(state.assigned), usage:shuffle(state.assigned.filter(usableUsage)) }, ans:{ mc:[], spell:[], listen:[], usage:[] } };
   runStage();
 }
@@ -879,22 +920,23 @@ function renderUsage(){
   const w=test.order.usage[test.qi];
   const q=buildUsage(w);
   if(!q){ test.ans.usage.push({word:w,correct:true}); return afterAnswer(); } // 만들 수 없으면 통과 처리
+  const sentHtml=esc(q.sentence).replace("___",`<span class="blank" id="blank">______</span>`);
   view.innerHTML=`
   <div class="card fade">
     ${stageHeader("usage")}
-    <p class="prompt-sub">이 단어가 <b>자연스럽게 쓰인</b> 문장은?</p>
-    <div class="prompt-word">${esc(w.en)} <button class="say inl" id="say" aria-label="발음">${ICspk}</button></div>
-    <div class="usage-hint">뜻·품사 없이, 문장만 보고 골라요</div>
+    <p class="prompt-sub">빈칸에 들어갈 단어를 고르세요</p>
+    <div class="cloze">${sentHtml}</div>
     <div class="opts uopts" id="opts"></div>
   </div>`;
-  const s=$("#say"); if(s)s.onclick=()=>speak(w.en);
   const box=$("#opts");
-  q.opts.forEach((o,k)=>{ const b=document.createElement("button"); b.className="opt uopt"; b.innerHTML=`<span class="key">${KEYS[k]}</span><span class="usen">${o.t}</span>`; b.onclick=()=>pick(b,o); box.appendChild(b); });
+  q.opts.forEach((o,k)=>{ const b=document.createElement("button"); b.className="opt uopt"; b.innerHTML=`<span class="key">${KEYS[k]}</span><span class="usen">${esc(o.t)}</span>`; b.onclick=()=>pick(b,o); box.appendChild(b); });
   function pick(btn,o){
     test.ans.usage.push({word:w,correct:o.ok});
+    const bl=$("#blank"); if(bl){ bl.textContent=w.en; bl.classList.add(o.ok?"ok":"no"); }
+    if(!o.ok) speak(w.en);
     box.querySelectorAll(".opt").forEach(el=>el.classList.add("disabled"));
     q.opts.forEach((oo,k)=>{ const el=box.children[k]; if(oo.ok) el.classList.add("correct"); else if(el===btn) el.classList.add("wrong"); else el.classList.add("dim"); });
-    setTimeout(afterAnswer, o.ok?640:1250);
+    setTimeout(afterAnswer, o.ok?720:1300);
   }
 }
 
@@ -919,11 +961,15 @@ function screenResult(){
   else if(pct>=60){verdict="잘하고 있어요";note="절반 이상 맞혔어요. 약한 단계를 다시 봐요.";}
   else if(pct>=40){verdict="조금 더 힘내요";note="아직 낯선 단어가 많네요. 암기부터 다시.";}
   else {verdict="처음이 어렵죠";note="천천히 다시 외우면 금방 익숙해져요.";}
+  const reviewMode=state.reviewMode, isLast=state.tier>=NT-1;
+  const passNow = reviewMode && pct>=LEVELUP_PCT;   // 복습 80%↑ → 레벨업 자격
+  if(passNow) markPassed(state.tier);
+  if(reviewMode){ verdict = passNow?(isLast?"레벨 완성! 🏆":"레벨업 성공! 🎉"):"조금만 더!"; note = passNow?(isLast?"최고 단계를 멋지게 마무리했어요.":`정답률 ${pct}% · 다음 단계로 올라갈 수 있어요!`):`레벨업엔 ${LEVELUP_PCT}%가 필요해요. 복습을 한 번 더 해볼까요?`; }
   const STLAB={mc:"객관식",spell:"영작",listen:"듣기",usage:"예문"};
   let savedLine="";
   if(auth.user){
     const a=acc()||{sessions:[]};
-    a.sessions=(a.sessions||[]).concat([{ ts:Date.now(),tier:state.tier,total:state.assigned.length,correct:mcRight.length,pct,
+    a.sessions=(a.sessions||[]).concat([{ ts:Date.now(),tier:state.tier,total:state.assigned.length,correct:mcRight.length,pct, review:reviewMode, leveledUp:passNow,
       oc:totalC, ot:totalQ,
       stages:{mc:[stageC.mc,stageT.mc],spell:[stageC.spell,stageT.spell],listen:[stageC.listen,stageT.listen],usage:[stageC.usage,stageT.usage]},
       items:words.map(r=>({en:r.word.en,ko:r.word.ko,miss:r.miss.slice()})),
@@ -937,14 +983,18 @@ function screenResult(){
   const noRows=review.length?review.map(r=>resRow(r.word,`<span class="miss-tags">${r.miss.map(s=>`<span class="mt">${STLAB[s]}</span>`).join("")}</span>`)).join(""):`<p class="empty-note">모든 단계를 통과했어요. 훌륭해요!</p>`;
   const okRows=perfect.length?perfect.map(r=>resRow(r.word,"")).join(""):`<p class="empty-note">아직 전 단계를 통과한 단어가 없어요.</p>`;
   const stPct=s=>stageT[s]?Math.round(stageC[s]/stageT[s]*100):0;
+  const levelBanner = (reviewMode&&passNow&&!isLast)?`<div class="levelup-banner"><div class="lu-ic">🎉</div><div class="lu-t"><b>${esc(TIER_META[state.tier].name)} 통과!</b><span>정답률 ${pct}% · <b>${esc(TIER_META[state.tier+1].name)}</b>(으)로 레벨업할 수 있어요</span></div></div>`
+    : (reviewMode&&passNow&&isLast)?`<div class="levelup-banner"><div class="lu-ic">🏆</div><div class="lu-t"><b>최고 단계 완성!</b><span>모든 단계를 끝냈어요. 대단해요!</span></div></div>`
+    : (reviewMode&&!passNow)?`<div class="hint warn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span>레벨업엔 <b>${LEVELUP_PCT}%</b> 이상이 필요해요. 지금 <b>${pct}%</b> · 복습을 한 번 더!</span></div>`:'';
   view.innerHTML=`
   <div class="card fade">
-    <div class="eyebrow">결과 분석 · 4단계 종합</div>
+    <div class="eyebrow">${reviewMode?'🏆 레벨 복습 결과':'결과 분석 · 4단계 종합'}</div>
     <div class="score-ring">
       <div class="ring"><svg width="168" height="168"><circle cx="84" cy="84" r="74" fill="none" stroke="var(--surface-2)" stroke-width="13"/><circle cx="84" cy="84" r="74" fill="none" stroke="var(--green)" stroke-width="13" stroke-linecap="round" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"/></svg><div class="num"><b>${pct}<span style="font-size:20px">%</span></b><span>${totalC} / ${totalQ} 정답</span></div></div>
       <div class="verdict">${verdict}<small>${note}</small></div>
       ${savedLine}
     </div>
+    ${levelBanner}
     <div class="stat-row four">
       <div class="stat"><b>${stPct("mc")}<span style="font-size:14px">%</span></b><span>객관식 ${stageC.mc}/${stageT.mc}</span></div>
       <div class="stat"><b>${stPct("spell")}<span style="font-size:14px">%</span></b><span>영작 ${stageC.spell}/${stageT.spell}</span></div>
@@ -952,14 +1002,24 @@ function screenResult(){
       <div class="stat"><b>${stPct("usage")}<span style="font-size:14px">%</span></b><span>예문 ${stageC.usage}/${stageT.usage}</span></div>
     </div>
     <div class="analysis"><h3><span class="d r"></span>다시 볼 단어 (${review.length})</h3>${noRows}<h3><span class="d g"></span>완벽히 맞힌 단어 (${perfect.length})</h3>${okRows}</div>
-    <div class="actions">${review.length?`<button class="btn primary" id="retry">틀린 단어만 다시</button>`:""}<button class="btn ${review.length?'ghost':'primary'}" id="again">새 단어로 이어서</button></div>
+    <div class="actions">${reviewMode
+      ? (passNow&&!isLast
+          ? `<button class="btn primary" id="levelup">${esc(TIER_META[state.tier+1].name)}(으)로 레벨업 →</button><button class="btn ghost" id="hub">단어암기로</button>`
+          : `<button class="btn primary" id="reReview">복습 다시 도전</button><button class="btn ghost" id="hub">단어암기로</button>`)
+      : (review.length?`<button class="btn primary" id="retry">틀린 단어만 다시</button>`:"")+`<button class="btn ${review.length?'ghost':'primary'}" id="again">새 단어로 이어서</button>`}</div>
     <div class="actions" style="margin-top:11px">${auth.user?`<button class="btn ghost" id="rec2">내 기록 보기</button>`:""}<button class="btn ghost" id="home">메인으로</button></div>
   </div>`;
   document.querySelectorAll(".say").forEach(b=>b.onclick=()=>speak(b.dataset.w));
-  if(review.length){ $("#retry").onclick=()=>{ state.assigned=review.map(r=>r.word); state.count=state.assigned.length; screenStudy(); }; }
-  $("#again").onclick=()=>{ const at=getActiveTier(); if(at!=null && availForTier(at).length) continueStudy(); else screenStudyHub(); };
+  if(reviewMode){
+    const lu=$("#levelup"); if(lu) lu.onclick=async()=>{ setActiveTier(state.tier+1); state._hubTier=null; state.reviewMode=false; if(auth.user) await saveCurrent(); screenStudyHub(); };
+    const rr=$("#reReview"); if(rr) rr.onclick=startReview;
+    const hb=$("#hub"); if(hb) hb.onclick=()=>{ state.reviewMode=false; screenStudyHub(); };
+  } else {
+    if(review.length){ $("#retry").onclick=()=>{ state.assigned=review.map(r=>r.word); state.count=state.assigned.length; screenStudy(); }; }
+    $("#again").onclick=()=>{ const at=getActiveTier(); if(at!=null && availForTier(at).length) continueStudy(); else screenStudyHub(); };
+  }
   if(auth.user) $("#rec2").onclick=screenRecords;
-  $("#home").onclick=screenHome;
+  $("#home").onclick=()=>{ state.reviewMode=false; screenHome(); };
 }
 
 // ---- 내 기록 ----
@@ -978,9 +1038,10 @@ function roadmapHtml(){
   const oc=2*Math.PI*26, ooff=oc*(1-overall/100);
   const rows=[];
   for(let i=NT-1;i>=0;i--){ // 위가 고레벨, 아래가 저레벨 (올라가는 느낌)
-    const done=(i<cur)||(pcts[i]>=CLEAR_PCT), isc=i===cur, locked=i>cur&&!done;
+    const pass=isPassed(i);
+    const done=(i<cur)||(pcts[i]>=CLEAR_PCT)||pass, isc=i===cur, locked=i>cur&&!done;
     const cls=isc?"cur":(done?"done":"");
-    const badge=isc?`<span class="road-badge cur">진행중</span>`:(done?`<span class="road-badge done">완료</span>`:`<span class="road-badge lock">🔒</span>`);
+    const badge=isc?`<span class="road-badge cur">진행중</span>`:(pass?`<span class="road-badge done">통과 ✓</span>`:(done?`<span class="road-badge done">완료</span>`:`<span class="road-badge lock">🔒</span>`));
     const node=done&&!isc?`<svg class="chk" viewBox="0 0 24 24" fill="none" stroke="#0e2414" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`:`${i+1}`;
     const mini=isc?`<div class="mini"><i style="width:${curPct}%"></i></div><span class="mini-t">${counts[i]} / ${TIER_TOTAL(i)} 단어 · ${curPct}%</span>`:`<span>${done?`${counts[i]} / ${TIER_TOTAL(i)} 단어`:`${TIER_TOTAL(i)}단어`}</span>`;
     rows.push(`<div class="road-row ${cls}"><div class="rnode">${node}</div><div class="road-info ${isc?'curb':''}"><b>${esc(TIER_META[i].name)}</b>${mini}</div>${badge}</div>`);
