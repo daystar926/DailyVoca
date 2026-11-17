@@ -188,6 +188,8 @@ input[type=range]{width:100%;margin-top:18px;accent-color:var(--green)}
 .spell-fb.ok{color:var(--green-deep)}
 .spell-fb.no{color:var(--danger)}
 .spell-fb .ans{font-size:18px}
+.dunno-btn{margin-top:14px;color:var(--muted)}
+.dunno-hint{font-size:12px;color:var(--faint);text-align:center;margin-top:8px}
 .usage-hint{font-size:12.5px;color:var(--faint);margin:2px 0 18px}
 .cloze{font-size:22px;font-weight:600;line-height:1.5;margin:6px 0 24px;word-break:keep-all}
 .cloze .blank{display:inline-block;min-width:60px;text-align:center;color:var(--green-deep);border-bottom:2.5px solid var(--green);font-weight:800;letter-spacing:1px;padding:0 6px}
@@ -702,10 +704,14 @@ function renderDiagQ(){
     <p class="prompt-sub">다음 단어의 뜻으로 알맞은 것은?</p>
     <div class="prompt-word">${esc(w.en)}</div>
     <div class="opts" id="opts"></div>
+    <button class="btn ghost block dunno-btn" id="dunno">모르겠습니다</button>
+    <p class="dunno-hint">정확한 측정을 위해 모르면 찍지 말고 눌러 주세요</p>
   </div>`;
   const box=$("#opts");
+  const next=()=>{ diag.i++; (diag.i>=total)?finishDiag():renderDiagQ(); };
   opts.forEach((o,i)=>{ const b=document.createElement("button"); b.className="opt"; b.innerHTML=`<span class="key">${KEYS[i]}</span><span>${esc(o)}</span>`;
-    b.onclick=()=>{ if(o===w.ko) diag.correct[w.tier]=true; diag.i++; (diag.i>=total)?finishDiag():renderDiagQ(); }; box.appendChild(b); });
+    b.onclick=()=>{ if(o===w.ko) diag.correct[w.tier]=true; next(); }; box.appendChild(b); });
+  $("#dunno").onclick=next; // 오답 처리(정답으로 세지 않음)
 }
 async function finishDiag(){
   let cnt=0; for(let i=0;i<NT;i++) if(diag.correct[i]) cnt++;
