@@ -188,6 +188,8 @@ input[type=range]{width:100%;margin-top:18px;accent-color:var(--green)}
 .spell-fb.ok{color:var(--green-deep)}
 .spell-fb.no{color:var(--danger)}
 .spell-fb .ans{font-size:18px}
+.codebox{width:100%;min-height:92px;border:1.5px solid var(--line);background:var(--surface-2);color:var(--muted);border-radius:12px;padding:12px 14px;font-size:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;resize:vertical;word-break:break-all}
+.codebox:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px var(--green-ring)}
 .dunno-btn{margin-top:14px;color:var(--muted)}
 .dunno-hint{font-size:12px;color:var(--faint);text-align:center;margin-top:8px}
 .usage-hint{font-size:12.5px;color:var(--faint);margin:2px 0 18px}
@@ -360,11 +362,12 @@ function ipaHtml(w){ return w.ipa?`<span class="ipa">${esc(w.ipa)}</span>`:""; }
 // 프롬프트용 품사 뱃지 (중복 제거한 라벨 모음)
 function posBadge(w){ const labs=[...new Set((w.senses||[]).map(s=>s[0]).filter(Boolean))]; return labs.length?`<span class="prompt-pos">${esc(labs.join("·"))}</span>`:""; }
 // mastery: distinct correctly-answered words per tier (logged-in users)
-function masteryCounts(){
+function masteryFromSessions(sessions){
   const sets=Array.from({length:NT},()=>new Set());
-  const a=acc(); if(a&&a.sessions) a.sessions.forEach(s=>(s.right||[]).forEach(w=>{ const ww=findEn(w.en); if(ww) sets[ww.tier].add(w.en); }));
+  (sessions||[]).forEach(s=>(s.right||[]).forEach(w=>{ const ww=findEn(w.en); if(ww) sets[ww.tier].add(w.en); }));
   return sets.map(s=>s.size);
 }
+function masteryCounts(){ const a=acc(); return masteryFromSessions(a&&a.sessions); }
 function tierPct(i,counts){ const c=(counts||masteryCounts())[i]; return Math.round(c/TIER_TOTAL(i)*100); }
 
 const $ = s => document.querySelector(s);
@@ -647,6 +650,7 @@ function screenSettings(){
     <p class="lede">${auth.user?`아이디 <b>${esc(auth.user)}</b>로 로그인되어 있어요.`:'로그인하면 기록과 진행 상황이 저장돼요.'}</p>
     <div class="field"><label>테마</label><div class="actions" style="margin-top:0">${tbtn("light","밝게")}${tbtn("dark","어둡게")}${tbtn("auto","시스템")}</div></div>
     <div class="field"><label>레벨 테스트</label><p class="lede" style="margin-top:0;margin-bottom:12px">진단 퀴즈(9문제)를 다시 풀어 추천 단계를 새로 받아요. 학습 기록은 그대로 유지돼요.</p><button class="btn ghost" id="redoDiag">레벨 테스트 다시 보기</button></div>
+    <div class="field"><label>학습 기록 공유 <span style="color:var(--faint);font-weight:500">· 제자 ↔ 선생님</span></label><p class="lede" style="margin-top:0;margin-bottom:12px">제자는 <b>내보내기</b>로 기록을 보내고, 선생님은 <b>불러오기</b>로 제자 리포트를 확인해요.</p><div class="actions" style="margin-top:0">${auth.user?`<button class="btn ghost" id="expRec">📤 내 기록 내보내기</button>`:''}<button class="btn ghost" id="impRec">📥 제자 기록 불러오기</button></div></div>
     ${at!=null?`<div class="field"><label>현재 단계 (${esc(TIER_META[at].name)}) 초기화</label><p class="lede" style="margin-top:0;margin-bottom:12px">학습한 단어 기록을 지워서 이 단계의 단어가 처음부터 다시 나와요.</p><button class="btn danger sm" id="resetTier">이 단계 초기화</button></div>`:''}
     ${auth.user?`<div class="field"><label style="color:var(--danger)">계정 전체 초기화</label><p class="lede" style="margin-top:0;margin-bottom:12px">학습 기록·진행 단계·쓴 단어를 <b>전부</b> 지우고 <b>레벨 테스트부터 새로</b> 시작해요. 아이디·비밀번호는 유지돼요. <b>되돌릴 수 없어요.</b></p><button class="btn danger sm" id="resetAll">계정 전체 초기화</button></div>`:''}
     <div class="actions">
@@ -658,6 +662,7 @@ function screenSettings(){
   $("#back").onclick=screenHome;
   if(auth.user) $("#logout").onclick=logout; else $("#login").onclick=screenAuth;
   $("#redoDiag").onclick=startDiag;
+  { const ex=$("#expRec"); if(ex) ex.onclick=screenExport; const im=$("#impRec"); if(im) im.onclick=screenImport; }
   const rt=$("#resetTier");
   if(rt){ let armed=false; rt.onclick=async()=>{ if(!armed){ armed=true; rt.textContent="한 번 더 누르면 초기화돼요"; setTimeout(()=>{armed=false; if($("#resetTier"))$("#resetTier").textContent="이 단계 초기화";},3000); return; } resetTier(at); if(auth.user) await saveCurrent(); screenSettings(); }; }
   const ra=$("#resetAll");
@@ -1035,10 +1040,11 @@ function screenResult(){
 // ---- 내 기록 ----
 // 듀오링고식 레벨 로드맵 (총 9단계 / 현재위치 / 앞뒤 / 전체 %)
 const CLEAR_PCT=80;
-function roadmapHtml(){
-  const counts=masteryCounts();
+function roadmapHtml(src){
+  const counts=src?masteryFromSessions(src.sessions):masteryCounts();
+  const passFn=i=>src?!!(src.passed&&src.passed[i]):isPassed(i);
   const pcts=counts.map((c,i)=>Math.round(c/TIER_TOTAL(i)*100));
-  let cur=getActiveTier();
+  let cur=src?(src.activeTier!=null?src.activeTier:null):getActiveTier();
   if(cur==null){ cur=pcts.findIndex(p=>p<CLEAR_PCT); if(cur<0)cur=NT-1; }
   const totalMastered=counts.reduce((s,c)=>s+c,0);
   const overall=Math.round(totalMastered/(NT*300)*100);
@@ -1048,7 +1054,7 @@ function roadmapHtml(){
   const oc=2*Math.PI*26, ooff=oc*(1-overall/100);
   const rows=[];
   for(let i=NT-1;i>=0;i--){ // 위가 고레벨, 아래가 저레벨 (올라가는 느낌)
-    const pass=isPassed(i);
+    const pass=passFn(i);
     const done=(i<cur)||(pcts[i]>=CLEAR_PCT)||pass, isc=i===cur, locked=i>cur&&!done;
     const cls=isc?"cur":(done?"done":"");
     const badge=isc?`<span class="road-badge cur">진행중</span>`:(pass?`<span class="road-badge done">통과 ✓</span>`:(done?`<span class="road-badge done">완료</span>`:`<span class="road-badge lock">🔒</span>`));
@@ -1068,7 +1074,8 @@ const SVGCHK='<svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linec
 const SVGX='<svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>';
 const STLAB_K={mc:"객관식",spell:"영작",listen:"듣기",usage:"예문"};
 // ---- 회차 상세 보기 ----
-function screenSession(s){
+function screenSession(s, opts){
+  opts=opts||{}; const backFn=opts.back||screenRecords, ro=!!opts.readonly;
   setStep("");
   const st=s.stages||{};
   const stPct=k=>{ const a=st[k]; return (a&&a[1])?Math.round(a[0]/a[1]*100):0; };
@@ -1100,11 +1107,112 @@ function screenSession(s){
       <div class="stat"><b>${stPct("usage")}<span style="font-size:14px">%</span></b><span>예문 ${stStr("usage")}</span></div>
     </div>`:`<div class="stat-row"><div class="stat ok"><b>${(s.right||[]).length}</b><span>맞힌 단어</span></div><div class="stat no"><b>${(s.wrong||[]).length}</b><span>틀린 단어</span></div></div>`}
     <div class="analysis"><h3><span class="d r"></span>부족했던 단어 (${weak.length})</h3>${weakRows}<h3><span class="d g"></span>잘 외운 단어 (${perfect.length})</h3>${okRows}</div>
-    <div class="actions">${weak.length?`<button class="btn primary" id="reviewW">부족했던 단어 복습</button>`:""}<button class="btn ghost" id="back">← 기록으로</button></div>
+    <div class="actions">${(!ro&&weak.length)?`<button class="btn primary" id="reviewW">부족했던 단어 복습</button>`:""}<button class="btn ghost" id="back">← ${ro?'리포트로':'기록으로'}</button></div>
   </div>`;
   document.querySelectorAll(".say").forEach(b=>b.onclick=()=>speak(b.dataset.w));
-  $("#back").onclick=screenRecords;
-  if(weak.length){ $("#reviewW").onclick=()=>{ const ws=weak.map(it=>findEn(it.en)).filter(Boolean); if(!ws.length)return; state.assigned=ws; state.count=ws.length; if(state.tier==null)state.tier=s.tier; screenStudy(); }; }
+  $("#back").onclick=backFn;
+  if(!ro&&weak.length){ const rw=$("#reviewW"); if(rw) rw.onclick=()=>{ const ws=weak.map(it=>findEn(it.en)).filter(Boolean); if(!ws.length)return; state.assigned=ws; state.count=ws.length; if(state.tier==null)state.tier=s.tier; screenStudy(); }; }
+}
+
+// ---- 학습 기록 내보내기 / 불러오기 (제자↔선생님) ----
+function b64e(str){ try{ return btoa(unescape(encodeURIComponent(str))); }catch(e){ return ""; } }
+function b64d(b){ return decodeURIComponent(escape(atob(b))); }
+function exportObj(){
+  const a=acc()||{};
+  return { app:"DailyVoca", v:1, exportedAt:Date.now(), user:auth.user||"게스트", nickname:a.nickname||"",
+    data:{ used:a.used||{}, activeTier:(a.activeTier!=null?a.activeTier:null), passed:a.passed||{}, sessions:a.sessions||[] } };
+}
+function downloadText(filename, text){
+  try{ const blob=new Blob([text],{type:"application/json;charset=utf-8"}); const url=URL.createObjectURL(blob);
+    const a=document.createElement("a"); a.href=url; a.download=filename; document.body.appendChild(a); a.click();
+    setTimeout(()=>{ try{document.body.removeChild(a);URL.revokeObjectURL(url);}catch(e){} },600); return true; }catch(e){ return false; }
+}
+function fileStamp(ts){ const d=new Date(ts),p=x=>String(x).padStart(2,"0"); return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}_${p(d.getHours())}${p(d.getMinutes())}`; }
+function screenExport(){
+  setStep("");
+  if(!auth.user){ view.innerHTML=`<div class="card fade"><div class="eyebrow">기록 내보내기</div><h2 class="title">로그인이 필요해요</h2><p class="lede">로그인한 계정의 학습 기록만 내보낼 수 있어요.</p><div class="actions"><button class="btn primary" id="go">로그인</button><button class="btn ghost" id="back">← 설정으로</button></div></div>`; $("#go").onclick=screenAuth; $("#back").onclick=screenSettings; return; }
+  const obj=exportObj(), json=JSON.stringify(obj), code=b64e(json);
+  const n=(obj.data.sessions||[]).length;
+  view.innerHTML=`
+  <div class="card fade">
+    <div class="eyebrow">기록 내보내기 · 제자용</div>
+    <h2 class="title">내 학습 기록 보내기</h2>
+    <p class="lede"><b>${esc(obj.nickname||obj.user)}</b>님의 기록(학습 세션 ${n}회)을 선생님께 보낼 수 있어요. 파일로 받거나, 코드를 복사해 카톡 등으로 보내세요.</p>
+    <div class="actions"><button class="btn primary" id="dl">📄 파일로 저장 (.json)</button></div>
+    <div class="field"><label>또는 코드 복사해서 붙여넣기</label>
+      <textarea id="codebox" class="codebox" readonly>${esc(code)}</textarea>
+      <div class="actions" style="margin-top:10px"><button class="btn ghost" id="cp">코드 복사</button></div>
+    </div>
+    <div class="hint"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg><span>선생님은 <b>설정 → 제자 기록 불러오기</b>에서 이 파일(또는 코드)을 열면 돼요.</span></div>
+    <div class="reset-row"><button class="link-btn" id="back">← 설정으로</button></div>
+  </div>`;
+  $("#dl").onclick=()=>{ const ok=downloadText(`DailyVoca_${(obj.user||"기록").replace(/[^\w가-힣]/g,"")}_${fileStamp(obj.exportedAt)}.json`, json); const b=$("#dl"); b.textContent=ok?"저장됐어요 ✓":"저장 실패 — 코드를 쓰세요"; setTimeout(()=>{ if($("#dl"))$("#dl").textContent="📄 파일로 저장 (.json)"; },1800); };
+  $("#cp").onclick=async()=>{ const b=$("#cp"); let ok=false; try{ await navigator.clipboard.writeText(code); ok=true; }catch(e){ try{ const t=$("#codebox"); t.focus(); t.select(); ok=document.execCommand("copy"); }catch(e2){} } b.textContent=ok?"복사됐어요 ✓":"복사 실패"; setTimeout(()=>{ if($("#cp"))$("#cp").textContent="코드 복사"; },1600); };
+  $("#back").onclick=screenSettings;
+}
+function parseImport(text){
+  text=(text||"").trim(); if(!text) return null;
+  let obj=null;
+  try{ obj=JSON.parse(text); }catch(e){ try{ obj=JSON.parse(b64d(text)); }catch(e2){ return null; } }
+  if(!obj||obj.app!=="DailyVoca"||!obj.data) return null;
+  return obj;
+}
+function screenImport(){
+  setStep("");
+  view.innerHTML=`
+  <div class="card fade">
+    <div class="eyebrow">기록 불러오기 · 선생님용</div>
+    <h2 class="title">제자 기록 확인하기</h2>
+    <p class="lede">제자가 보낸 <b>파일(.json)</b>을 고르거나, <b>코드</b>를 붙여넣고 불러오세요. 불러온 기록은 저장되지 않고 보기만 해요.</p>
+    <div class="actions"><label class="btn primary" for="impfile" style="cursor:pointer">📂 파일 선택</label><input type="file" id="impfile" accept=".json,application/json,text/plain" style="display:none"></div>
+    <div class="field"><label>또는 코드 붙여넣기</label>
+      <textarea id="impbox" class="codebox" placeholder="제자가 보낸 코드를 여기에 붙여넣기…"></textarea>
+    </div>
+    <div class="err" id="imperr"></div>
+    <div class="actions"><button class="btn primary" id="load">불러오기</button><button class="btn ghost" id="back">← 설정으로</button></div>
+  </div>`;
+  const err=m=>{ const e=$("#imperr"); if(e) e.textContent=m||""; };
+  const tryOpen=text=>{ const obj=parseImport(text); if(!obj){ err("형식이 올바르지 않아요. 제자가 보낸 파일이나 코드가 맞는지 확인해 주세요."); return; } screenReport(obj); };
+  $("#load").onclick=()=>tryOpen($("#impbox").value);
+  $("#impfile").onchange=e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>tryOpen(String(r.result||"")); r.onerror=()=>err("파일을 읽지 못했어요."); r.readAsText(f); };
+  $("#back").onclick=screenSettings;
+}
+function screenReport(obj){
+  setStep("");
+  const d=obj.data||{}; const sessions=(d.sessions||[]).slice().sort((x,y)=>y.ts-x.ts);
+  const n=sessions.length;
+  const avg=n?Math.round(sessions.reduce((s,x)=>s+(x.pct||0),0)/n):0;
+  const chron=sessions.slice().reverse();
+  const counts=masteryFromSessions(sessions), mastered=counts.reduce((a,b)=>a+b,0);
+  const wrongCount={},koOf={}; sessions.forEach(s=>(s.wrong||[]).forEach(w=>{wrongCount[w.en]=(wrongCount[w.en]||0)+1;koOf[w.en]=w.ko;}));
+  const weak=Object.keys(wrongCount).map(en=>({en,ko:koOf[en],c:wrongCount[en]})).sort((p,q)=>q.c-p.c).slice(0,20);
+  const weakRows=weak.length?weak.map(w=>`<div class="wrow"><span class="en">${esc(w.en)}</span><span class="ko">${esc(w.ko)}</span><span class="cnt">${w.c}회 틀림</span></div>`).join(""):`<p class="empty-note">반복해서 틀린 단어가 없어요.</p>`;
+  const trend=n?`<div class="trend-card">${trendSvg(chron)}<div class="trend-cap">${n>=2?`최근 ${Math.min(n,20)}회 · 점선=평균 ${avg}%`:'회차가 쌓이면 추이선이 그려져요'}</div></div>`:"";
+  const DOW=['일','월','화','수','목','금','토'], p2=x=>String(x).padStart(2,'0');
+  const groups=[], gmap={};
+  sessions.slice(0,40).forEach((s,i)=>{ const dt=new Date(s.ts), key=`${dt.getFullYear()}.${p2(dt.getMonth()+1)}.${p2(dt.getDate())}`;
+    if(!gmap[key]){ gmap[key]={key,d:dt,items:[]}; groups.push(gmap[key]); } gmap[key].items.push({s,gi:i}); });
+  const histRows=n?groups.map(g=>{
+    const ps=g.items.map(o=>o.s.pct||0), gavg=Math.round(ps.reduce((a,b)=>a+b,0)/ps.length), words=g.items.reduce((a,o)=>a+(o.s.total||0),0);
+    const rows=g.items.map(o=>{ const s=o.s, t=new Date(s.ts), hm=`${p2(t.getHours())}:${p2(t.getMinutes())}`;
+      return `<button class="hrow hrow-btn" data-i="${o.gi}"><span class="date">${hm}</span><span class="lv">${esc((TIER_META[s.tier]||{}).name||'-')} · ${s.total}단어</span><span class="pct">${s.pct}%<small> (${s.oc!=null?s.oc:s.correct}/${s.ot!=null?s.ot:s.total})</small></span><span class="hchev">${IC.chev}</span></button>`; }).join("");
+    return `<div class="day-group"><div class="day-head"><b>${g.key.slice(5)} (${DOW[g.d.getDay()]})</b><span>${g.items.length}회 · 평균 ${gavg}% · ${words}단어</span></div>${rows}</div>`;
+  }).join(""):`<p class="empty-note">아직 시험 기록이 없어요.</p>`;
+  const name=obj.nickname||obj.user||"제자";
+  const ed=new Date(obj.exportedAt||Date.now()); const estr=`${ed.getFullYear()}.${p2(ed.getMonth()+1)}.${p2(ed.getDate())} ${p2(ed.getHours())}:${p2(ed.getMinutes())}`;
+  view.innerHTML=`
+  <div class="card fade">
+    <div class="study-head"><div><div class="eyebrow">제자 학습 리포트 · 읽기 전용</div><h2 class="title">${esc(name)}</h2></div><span class="chip">${n}회 학습</span></div>
+    <p class="lede">제자가 내보낸 기록이에요 (내보낸 시각 ${estr}). <b>저장되지 않고 보기만</b> 해요. 회차를 누르면 그날 단어별 정오를 볼 수 있어요.</p>
+    <h3 class="sect-h"><span class="d g"></span>레벨 진행</h3>
+    ${roadmapHtml(d)}
+    <div class="stat-row three" style="margin-top:20px"><div class="stat"><b>${n}</b><span>학습 세션</span></div><div class="stat ok"><b>${avg}<span style="font-size:15px">%</span></b><span>평균 정답률</span></div><div class="stat"><b>${mastered}</b><span>맞힌 단어 수</span></div></div>
+    ${n?`<h3 class="sect-h"><span class="d g"></span>정답률 추이</h3>${trend}`:""}
+    <div class="analysis"><h3><span class="d r"></span>자주 틀린 단어 (${weak.length})</h3>${weakRows}<h3 style="margin-top:28px"><span class="d g"></span>회차별 기록 <span style="font-weight:500;color:var(--faint);font-size:12.5px">· 누르면 단어 결과</span></h3>${histRows}</div>
+    <div class="actions"><button class="btn ghost" id="close">← 닫기</button></div>
+  </div>`;
+  document.querySelectorAll(".hrow-btn").forEach(b=>b.onclick=()=>screenSession(sessions[+b.dataset.i], {back:()=>screenReport(obj), readonly:true}));
+  $("#close").onclick=screenSettings;
 }
 // 정답률 추이 라인 그래프 (인라인 SVG)
 function trendSvg(chron){
