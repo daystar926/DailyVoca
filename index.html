@@ -313,7 +313,44 @@ input[type=range]{width:100%;margin-top:18px;accent-color:var(--green)}
 .hint.warn svg{stroke:var(--danger)}
 .fade{animation:fade .35s ease}
 @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-@media (max-width:480px){.card{padding:22px}h1.hero{font-size:28px}.prompt-word{font-size:32px}.stat-row,.stat-row.three{grid-template-columns:1fr}.tier-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){
+  .wrap{padding-block:16px 44px;padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px))}
+  .topbar{margin-bottom:18px}
+  .brand{font-size:16px;gap:9px}.logo{width:30px;height:30px}
+  .steps{margin-bottom:16px;gap:4px}.step{font-size:11px}.step .dot{width:19px;height:19px;font-size:10px}.step .bar{width:10px}
+  .card{padding:18px;border-radius:15px}
+  .eyebrow{font-size:10.5px;margin-bottom:9px}
+  h1.hero{font-size:25px}h2.title{font-size:19px}.lede{font-size:13.5px;margin-top:8px}
+  .btn{padding:12px 16px;font-size:14px;border-radius:12px;gap:7px}.btn.sm{padding:9px 13px;font-size:12.5px}
+  .btn svg{width:16px;height:16px}
+  .actions{gap:9px;margin-top:20px}
+  .prompt-word{font-size:30px}.prompt-sub{margin-bottom:18px;font-size:13px}
+  .opt{padding:13px 14px;font-size:14.5px;gap:11px;border-radius:12px}.opt .key{width:23px;height:23px;font-size:12px}
+  .menu-grid{gap:10px;margin-top:20px}.menu-card{padding:14px 15px;gap:13px;border-radius:14px}
+  .menu-card .mi{width:40px;height:40px;border-radius:11px}.menu-card .mi svg{width:20px;height:20px}
+  .menu-card .mt b{font-size:15px}.menu-card .mt span{font-size:12px}
+  .prog-card{padding:13px 15px}.active-banner{padding:14px 15px}
+  .field{margin-top:20px}.field label{font-size:13px;margin-bottom:10px}
+  .tier-grid{grid-template-columns:repeat(2,1fr);gap:8px}.tier-btn{padding:12px 8px}
+  .count-val{font-size:34px}.stepper button{width:42px;height:42px;font-size:20px}
+  .stat-row,.stat-row.three,.stat-row.four{grid-template-columns:1fr 1fr;gap:9px}
+  .stat{padding:13px 14px}.stat b{font-size:22px}.stat span{font-size:12px}
+  .ring{width:144px;height:144px}.ring .num b{font-size:40px}
+  .wordrow{padding:12px 14px;gap:10px}.wordrow .en{font-size:16px}.senses{max-width:56%}.sense{font-size:13.5px}
+  .cloze{font-size:19px}.spell-input{font-size:20px;padding:14px 16px}.spell-meaning .sense{font-size:20px}
+  .hint{padding:12px 14px;font-size:13px;margin-top:18px}
+  .road-row .rnode{width:44px;height:44px;font-size:13px}.road-line{left:21px}
+  .road-info b{font-size:15px}.road-badge{font-size:10px;padding:3px 8px}
+  .level-hero{padding:14px 15px;gap:12px}.level-hero .lv-ring{width:56px;height:56px}
+  .level-hero .lv-txt b{font-size:17px}.level-hero .lv-txt span{font-size:12px}
+  .stage-bar{gap:4px;margin-bottom:13px}.sdot{font-size:11px;padding:4px 10px}
+  .res-row{padding:11px 13px;gap:11px}.wrow,.hrow{padding:11px 13px}
+  .verdict{font-size:17px}
+}
+@media (max-width:400px){
+  .card{padding:15px}h1.hero{font-size:23px}.prompt-word{font-size:27px}
+  .tier-btn b{font-size:13px}.btn{font-size:13.5px}
+}
 @media (prefers-reduced-motion:reduce){.fade{animation:none}.pbar i,.btn.primary{transition:none}}
 </style>
 </head>
@@ -1302,6 +1339,28 @@ applyTheme(theme);
 $("#themeBtn").onclick=()=>{ const cur=document.documentElement.getAttribute("data-theme"); const next=cur==="dark"?"light":(cur==="light"?"dark":(matchMedia("(prefers-color-scheme: dark)").matches?"light":"dark")); theme=next; try{localStorage.setItem("vocab-theme",next);}catch(e){} applyTheme(next); };
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{ if(!document.documentElement.getAttribute("data-theme")) applyTheme(null); });
 $("#brand").onclick=()=>{ state.diagnosis=null; (auth.user||auth.guest)?screenHome():screenAuth(); };
+
+// ---- 뒤로가기 = 이전 화면 (브라우저 히스토리 연동) ----
+let navStack=[];
+function pushNav(id, thunk){
+  const top=navStack[navStack.length-1];
+  if(top && top.id===id){ top.thunk=thunk; try{history.replaceState({d:navStack.length},"");}catch(e){} return; }
+  navStack.push({id,thunk});
+  try{ if(navStack.length===1) history.replaceState({d:1},""); else history.pushState({d:navStack.length},""); }catch(e){}
+}
+window.addEventListener("popstate", function(){
+  if(navStack.length>1){
+    navStack.pop();
+    const prev=navStack[navStack.length-1];
+    if(prev&&prev.thunk){ try{ prev.thunk(); }catch(e){} }
+  }
+  // 루트(길이 1)에서는 기본 동작 허용(앱 종료)
+});
+// 페이지성 화면 함수를 감싸서, 호출 시 히스토리에 기록 → 뒤로가기로 이전 화면 복귀
+["screenHome","screenStudyHub","screenSetup","screenRecords","screenSettings","screenLevelIntro","screenAuth","screenExport","screenImport","screenReport","screenSession","screenLevelResult","screenStudy","screenResult"].forEach(function(name){
+  const orig=window[name]; if(typeof orig!=="function") return;
+  window[name]=function(){ const args=arguments, self=this; pushNav(name, function(){ return orig.apply(self,args); }); return orig.apply(self,args); };
+});
 
 // ---- boot ----
 (async function boot(){
